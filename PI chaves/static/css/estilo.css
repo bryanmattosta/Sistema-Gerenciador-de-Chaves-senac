@@ -1,0 +1,38 @@
+#cabecalho{
+    min-height: calc(20vh - 140px);
+    /* background-color: blue; */
+    border-radius: 5px;
+}
+
+
+#conteudo{
+    background-color: #E0DEDE;
+    min-height: calc(100vh - 140px);
+    /* border: 5px solid black; */
+    margin: 0em 0em 0em;
+    padding: 8em;
+    
+}
+
+#rodape{
+    background-color: #80c3f3;
+    padding: 6em;
+}
+
+#cadastro{
+    margin-left: 45em;
+    margin-top: 14em;
+}
+
+#cardPrincipal{
+    margin-left: 38em;
+    margin-top: 10em;
+}
+
+.navbar-custom{
+    background-color: #F58220;
+}
+
+.div-custom{
+    background-color: #F58220;
+}
