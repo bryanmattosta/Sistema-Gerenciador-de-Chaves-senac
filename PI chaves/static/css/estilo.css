@@ -54,6 +54,12 @@
     margin: 8px 0px 0px;
 }
 
-#cadastrar_chave{
+#cadastrar_chave, #cadastrar_ambiente{
     margin-left: 91em;
+    margin-bottom: 0em;
+}
+
+
+#cadastrar_usuario{
+    margin-left: 89em;   
 }

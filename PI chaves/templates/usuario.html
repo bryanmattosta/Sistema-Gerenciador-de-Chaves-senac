@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block titulo %} - Cadastrar Usuario{% endblock %}
+
+{% block usuario %} Pedro {% endblock %}
+
+{% block conteudo %}
+    <div class="card">
+      <div class="card-body">
+        <form class="row g-3">
+            <div class="col-md-6">
+                <label for="inputEmail4" class="form-label">Nome de Usuario</label>
+                <input type="text" name="nome_usuario" class="form-control" id="inputEmail4">
+            </div>
+            <div class="col-md-6">
+                <label for="inputPassword4" class="form-label">Senha</label>
+                <input type="password" name="senha_usuario" class="form-control" id="inputPassword4">
+            </div>
+            <div class="col-6">
+                <label for="inputAddress" class="form-label">E-mail</label>
+                <input type="email" name="email_usuario" class="form-control" id="inputAddress" placeholder="1234 Main St">
+            </div>
+<!-- adicionar o for dps para perf -->
+            <div class="col-6">
+                <label for="inputAddress2" class="form-label">Perf</label>
+                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="col-12">
+                <label for="inputAddress2" class="form-label">Foto do Usuario</label>
+                <input type="file" class="form-control" name="foto_usuario" id="inputAddress2" placeholder="Apartment, studio, or floor">
+            </div>
+            <div class="col-12">
+                <button type="submit" id="cadastrar_usuario" class="btn btn-primary">Cadastrar Usuario</button>
+            </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}
