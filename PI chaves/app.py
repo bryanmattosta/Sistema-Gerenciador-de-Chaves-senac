@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from tabelas import engine, Base, Chave, Usuario, Pessoa, Ambiente, Movimentacao, Reserva, Movimentacao_devolucao
+from tabelas import engine, Base, Chave, Usuario, Perfil, Ambiente, Movimentacao, Reserva, Movimentacao_devolucao
 
 
 #cria a sesao
@@ -30,11 +30,10 @@ def chave():
 def ambiente():
     return render_template('ambiente.html')
 
-#usuario
-@app.route("/usuario")
+#perfil
+@app.route("/perfil")
 def perfil():
-    return render_template('usuario.html')
-
+    return render_template('perfil.html')
 
 #movimentacao
 @app.route("/movimentacao")

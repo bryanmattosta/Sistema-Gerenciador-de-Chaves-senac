@@ -32,11 +32,11 @@ class Usuario(Base):
     perfil        = Column(String(150))
 Base.metadata.create_all(engine)
 
-#Criando tabela banco de dados pessoa
-class Pessoa(Base):
-    __tablename__ = "tb_pessoa"
-    id_pessoa     = Column(Integer, primary_key=True)
-    nome_pessoa   = Column(String(200), nullable=True)
+#Criando tabela banco de dados perfil
+class Perfil(Base):
+    __tablename__ = "tb_perfil"
+    id_perfil     = Column(Integer, primary_key=True)
+    nome_perfil   = Column(String(200), nullable=True)
     matricula     = Column(Numeric(12,0), nullable=True)
     cargo         = Column(String(250), nullable=True)
 Base.metadata.create_all(engine)
