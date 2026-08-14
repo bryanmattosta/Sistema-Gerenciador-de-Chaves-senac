@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block titulo %} - Cadastro Chave{% endblock %}
+
+{% block usuario %} Pedro {% endblock %}
+
+{% block conteudo %}
+    <div class="card mb-3" id="card_chave">
+        <h3 id="tema_chave" style="text-align: center;">Cadastro de Chave</h3>
+        <hr>
+      <div class="card-body">
+        <form class="row g-3">
+            <div class="col-md-6">
+                <label for="inputEmail4" class="form-label">Nome da Chave</label>
+                <input type="text" class="form-control" id="inputEmail4" name="nome_chave" placeholder="Chave Laboratorio...">
+            </div>
+            <div class="col-md-6">
+                <label for="inputPassword4" class="form-label">Identificador da Chave</label>
+                <input type="text" class="form-control" id="inputPassword4" name="identificador" placeholder="Cor-Detalhe-Formato">
+            </div>
+            <div class="col-6">
+                <label for="inputAddress2" class="form-label">Foto da Chave</label>
+                <input type ="file" class="form-control" id="inputAddress2" name="foto">
+            </div>
+            <div class="col-6">
+                <label for="inputAddress" class="form-label">Ambiente</label>
+                <input type="text" class="form-control" id="inputAddress" name="ambiente">
+            </div>
+            <div class="col-12">
+                <button id="cadastrar_chave" type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}

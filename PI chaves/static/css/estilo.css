@@ -36,3 +36,24 @@
 .div-custom{
     background-color: #F58220;
 }
+
+/* #card_chave{ */
+    /* margin-left: 25em;
+    margin-top: 5em;
+    width: 50%;
+} */
+
+#nome_card{
+    margin-left: 25em;
+    margin-top: 5em;
+    width: 50%;
+    margin-bottom: 0px;
+}
+
+#tema_chave{
+    margin: 8px 0px 0px;
+}
+
+#cadastrar_chave{
+    margin-left: 91em;
+}
