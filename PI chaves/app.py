@@ -40,6 +40,12 @@ def perfil():
 def movimentacao():
     return render_template('movimentacao.html')
 
+#devolucao
+@app.route("/devolucao")
+def devolucao():
+    return render_template('devolucao.html')
+
+
 #reserva
 @app.route("/reserva")
 def reserva():
