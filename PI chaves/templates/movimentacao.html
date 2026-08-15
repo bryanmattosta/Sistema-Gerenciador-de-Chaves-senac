@@ -4,10 +4,12 @@
 
 {% block usuario %} Pedro {% endblock %}
 
+
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
         <form class="row g-3">
+<!-- Criar for para perfil -->
             <div class="col-md-12">
                 <label for="inputEmail4" class="form-label">Perfil</label>
                 <input type="text" class="form-control" id="inputEmail4">
@@ -31,24 +33,24 @@
 
                         <!-- Data -->
                         <div>
-                            <label for="dataReserva" class="form-label">Data Reserva</label>
+                            <label for="dataReserva" class="form-label">Data</label>
                             <input type="date" class="form-control" id="dataReserva">
                         </div>
 
                         <!-- Horário -->
                         <div>
-                            <label class="form-label">Horário Reserva</label>
+                            <label class="form-label">Horário</label>
                             <div class="d-flex align-items-center gap-1">
-                                <input type="time" class="form-control" name="horario_reserva" id="horaInicio">
+                                <input type="time" class="form-control" name="horario_inicio" id="horaInicio">
                                 <span>:</span>
-                                <input type="time" class="form-control" name="horario_reserva_fim" id="horaFim">
+                                <input type="time" class="form-control" name="horario_fim" id="horaFim">
                             </div>
                         </div>
 
                         <!-- Botão -->
                         <div>
                             <button type="submit" id="cadastrar_reserva" class="btn btn-primary">
-                                Cadastrar Reserva
+                                Cadastrar Movimentação
                             </button>
                         </div>
 

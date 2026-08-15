@@ -29,7 +29,7 @@ class Usuario(Base):
     nome_usuario  = Column(String(250))
     email         = Column(String(250))
     senha         = Column(Numeric(15,0))
-    perfil        = Column(String(150))
+    id_perfil     = Column(Integer)
 Base.metadata.create_all(engine)
 
 #Criando tabela banco de dados perfil
@@ -56,7 +56,8 @@ class Movimentacao(Base):
     __tablename__      = "tb_movimentacao"
     id_movimentacao    = Column(Integer, primary_key=True)
     id_chave           = Column(Integer)
-    id_pessoa          = Column(Integer)
+    id_perfil          = Column(Integer)
+    id_ambiente        = Column(Integer)
     data_retirada      = Column(Date)
     id_reserva         = Column(Integer)
     horario_inicio     = Column(Time)
@@ -69,7 +70,7 @@ class Reserva(Base):
     id_reserva          = Column(Integer, primary_key=True)
     id_chave            = Column(Integer)
     id_ambiente         = Column(Integer)
-    id_usuario          = Column(Integer)
+    id_perfil          = Column(Integer)
     data_reserva        = Column(Date)
     horario_reserva     = Column(Time)
     horario_reserva_fim = Column(Time)
