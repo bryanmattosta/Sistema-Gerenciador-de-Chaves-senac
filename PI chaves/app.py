@@ -24,6 +24,10 @@ def home():
 def chave():
     return render_template('chave.html')
 
+#usuario
+@app.route("/usuario")
+def usuario():
+    return render_template('usuario.html')
 
 #ambiente
 @app.route("/ambiente")

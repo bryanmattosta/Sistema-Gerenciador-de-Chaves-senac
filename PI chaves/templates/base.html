@@ -28,23 +28,29 @@
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Reserva</a>
+            <a class="nav-link" href="{{ url_for('reserva') }}">Reserva</a>
           </li>
            <li class="nav-item">
-            <a class="nav-link" href="#">Historico</a>
+            <a class="nav-link" href="{{ url_for('historico') }}">Historico</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Chave</a>
+            <a class="nav-link" href="{{ url_for('chave') }}">Chave</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Ambiente</a>
+            <a class="nav-link" href="{{ url_for('ambiente') }}">Ambiente</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Usuario</a>
+            <a class="nav-link" href="{{ url_for('usuario') }}">Usuario</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Movimentação</a>
+            <a class="nav-link" href="{{ url_for('movimentacao') }}">Movimentação</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('devolucao') }}">Devolução</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('perfil') }}">Perfil</a>
+          </li>          
       </div>
     </div>
   </div>
