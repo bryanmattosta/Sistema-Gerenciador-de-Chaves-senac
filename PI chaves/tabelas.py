@@ -65,13 +65,14 @@ Base.metadata.create_all(engine)
 
 #Criando tabela banco de dados reserva
 class Reserva(Base):
-    __tablename__   = "tb_reserva"
-    id_reserva      = Column(Integer, primary_key=True)
-    id_chave        = Column(Integer)
-    id_ambiente     = Column(Integer)
-    id_usuario      = Column(Integer)
-    data_reserva    = Column(Date)
-    horario_reserva = Column(Time)
+    __tablename__       = "tb_reserva"
+    id_reserva          = Column(Integer, primary_key=True)
+    id_chave            = Column(Integer)
+    id_ambiente         = Column(Integer)
+    id_usuario          = Column(Integer)
+    data_reserva        = Column(Date)
+    horario_reserva     = Column(Time)
+    horario_reserva_fim = Column(Time)
 Base.metadata.create_all(engine)
 
 
