@@ -45,6 +45,18 @@ def chave():
         return redirect(url_for("chave"))
     return render_template('chave.html')
 
+#consultar chave
+@app.route("/chave/consultar", methods=["GET", "POST"])
+def consultar_chave():
+    
+    #pegar a chave que foi informada no formulário
+    nome_chave = request.args.get("chave","")
+    
+    #consultar o(s) chave(s)
+    chaves = sessao.query(Chave).filter(Chave.nome_chave.like(f"%{nome_chave}%")).all()
+    
+    #chamar chave.html para mostrar os dados
+    return render_template("chave.html", chaves=chaves)
 
 #alterar chave
 @app.route("/chave/alterar/<int:id_chave>", methods=["GET", "POST"])
