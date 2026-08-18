@@ -48,16 +48,16 @@
     </div>
     <hr>
 <div class="d-flex gap-3">
-<!-- for para cada chave -->
+{% for chave in chaves %}
 <div class="card" style="width: 18rem;">
   <img src="..." class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Nome da chave</h5>
-    <p class="card-text">identificador</p>
+    <h5 class="card-title">{{ chave.nome_chave }}</h5>
+    <p class="card-text">{{ chave.identificador }}</p>
   </div>
   <ul class="list-group list-group-flush">
-    <li class="list-group-item">Observação</li>
-    <li class="list-group-item">Disponivel</li>
+    <li class="list-group-item">{{ chave.observacao }}</li>
+    <li class="list-group-item">{{ chave.disponivel }}</li>
   </ul>
   <div class="card-body">
     <button type="button" class="btn btn-outline-warning">Editar</button>

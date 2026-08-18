@@ -24,6 +24,20 @@ def home():
 def chave():
     return render_template('chave.html')
 
+#chave consultar
+@app.route("/chave/consultar", methods=["GET", "POST"])
+def consultar_chave():
+    
+    #Pegar a chave foi informada
+    chave_nome = request.args.get("nome_chave","")
+    
+    #consultar chave
+    chaves = sessao.query(Chave).filter(Chave.nome_chave.like(f"%{chave_nome}%")).all()
+    
+    #chamar cahve.html para mostrar dados
+    return render_template('chave.html', chaves=chaves)
+
+
 #usuario
 @app.route("/usuario")
 def usuario():
