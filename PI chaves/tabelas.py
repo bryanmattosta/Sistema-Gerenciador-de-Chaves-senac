@@ -17,7 +17,7 @@ class Chave(Base):
     identificador = Column(String(250))
     id_ambiente   = Column(Integer)
     observacao    = Column(String(250))
-    disponivel    = Column(Boolean)
+    disponivel    = Column(String(45))
     nome_chave     = Column(String(250))
 Base.metadata.create_all(engine)
 

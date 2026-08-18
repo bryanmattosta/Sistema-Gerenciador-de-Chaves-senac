@@ -41,30 +41,31 @@
     <h3 style="text-align: center;">Pesquisa Chave</h1>
     <hr>
     <div class="col-12">
-    <div class="d-flex justify-content-center">
-        <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise a chave">
-        <button class="btn btn-primary" type="button">Buscar</button>
-    </div>
+        <form method="get" action="{{ url_for('consultar_chave') }}" role="search">
+            <div class="d-flex justify-content-center">
+                <input type="search"class="form-control"id="formGroupExampleInput"placeholder="Pesquise a chave" name="nome_chave">
+                <button class="btn btn-primary" type="submit">Buscar</button>
+            </div>
+        </form>
     </div>
     <hr>
 <div class="d-flex gap-3">
 {% for chave in chaves %}
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-  <div class="card-body">
-    <h5 class="card-title">{{ chave.nome_chave }}</h5>
-    <p class="card-text">{{ chave.identificador }}</p>
-  </div>
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item">{{ chave.observacao }}</li>
-    <li class="list-group-item">{{ chave.disponivel }}</li>
-  </ul>
-  <div class="card-body">
-    <button type="button" class="btn btn-outline-warning">Editar</button>
-    <button type="button" class="btn btn-outline-danger">Deletar</button>
-  </div>
-</div>
-<!-- final for -->
- 
+    <div class="card" style="width: 18rem;">
+    <img src="/static/img/icon_user.png" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{ chave.nome_chave }}</h5>
+        <p class="card-text">{{ chave.identificador }}</p>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">{{ chave.observacao }}</li>
+        <li class="list-group-item">{{ chave.disponivel }}</li>
+    </ul>
+    <div class="card-body">
+        <button type="button" class="btn btn-outline-warning">Editar</button>
+        <button type="button" class="btn btn-outline-danger">Deletar</button>
+    </div>
+    </div>
+{% endfor %}
 </div>
 {% endblock %}
