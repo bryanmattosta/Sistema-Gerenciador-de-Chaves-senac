@@ -45,18 +45,6 @@ def chave():
         return redirect(url_for("chave"))
     return render_template('chave.html')
 
-#consultar chave
-@app.route("/chave/consultar", methods=["GET", "POST"])
-def consultar_chave():
-    
-    #pegar a chave que foi informada no formulário
-    nome_chave = request.args.get("chave","")
-    
-    #consultar o(s) chave(s)
-    chaves = sessao.query(Chave).filter(Chave.nome_chave.like(f"%{nome_chave}%")).all()
-    
-    #chamar chave.html para mostrar os dados
-    return render_template("chave.html", chaves=chaves)
 
 #alterar chave
 @app.route("/chave/alterar/<int:id_chave>", methods=["GET", "POST"])
@@ -105,6 +93,17 @@ def excluir_chave(id_chave):
     
     #retornar a tela principal do cliente
     return redirect(url_for("chave"))
+
+#chave consultar
+@app.route("/chave/consultar", methods=["GET", "POST"])
+def consultar_chave():
+    #Pegar a chave foi informada
+    chave_nome = request.args.get("nome_chave","")
+    #consultar chave
+    chaves = sessao.query(Chave).filter(Chave.nome_chave.like(f"%{chave_nome}%")).all()
+    #chamar cahve.html para mostrar dados
+    return render_template('chave.html', chaves=chaves)
+
 
 #usuario
 @app.route("/usuario")
@@ -261,6 +260,18 @@ def excluir_ambiente(id_ambiente):
 
     #retornar a tela principal do ambiente
     return redirect(url_for("ambiente"))
+
+#ambiente consultar
+@app.route("/ambiente/consultar",methods=["GET", "POST"])
+def consultar_ambiente():
+    #Pegar o ambiente informado
+    ambiente_nome = request.args.get("ambiente","")
+    
+    #consultar chave
+    ambientes = sessao.query(Ambiente).filter(Ambiente.ambiente.like(f"%{ambiente_nome}%"))
+    
+    #chamar p ambiente.html para mostrar dados
+    return render_template('ambiente.html', ambientes=ambientes)
 
 #perfil
 @app.route("/perfil")
