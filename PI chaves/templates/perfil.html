@@ -30,4 +30,38 @@
         </form>
       </div>
     </div>
+
+<!-- card pesquisa -->
+ <div class="card mb-3" id="card_chave">
+    <h3 style="text-align: center;">Pesquisa Perfil</h1>
+    <hr>
+    <div class="col-12">
+    <div class="d-flex justify-content-center">
+      <form method="get" action="{{ url_for('consultar_perfil') }}" role="search">
+        <div class="d-flex justify-content-center">  
+          <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise a chave" name="perfil">
+          <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+      </form>
+    </div>
+    </div>
+    <hr>
+<div class="d-flex gap-3">
+{% for perfil in perfis %}
+<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">{{ perfil.nome_perfil }}</h5>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">{{ perfil.cargo }}</li>
+    <li class="list-group-item">{{ perfil.matricula }}</li>
+  </ul>
+  <div class="card-body">
+    <button type="button" class="btn btn-outline-warning">Editar</button>
+    <button type="button" class="btn btn-outline-danger">Deletar</button>
+  </div>
+</div>
+{% endfor %}
+</div>
 {% endblock %}

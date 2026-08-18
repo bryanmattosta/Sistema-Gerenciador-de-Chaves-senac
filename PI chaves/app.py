@@ -302,10 +302,10 @@ def perfil():
 def consultar_perfil():
     
     #pegar o perfil que foi informado no formulário
-    nome_perfil = request.args.get("perfil","")
+    perfil_nome = request.args.get("perfil","")
     
     #consultar o(s) perfil(s)
-    perfis = sessao.query(Perfil).filter(Perfil.nome.like(f"%{nome_perfil}%")).all()
+    perfis = sessao.query(Perfil).filter(Perfil.nome_perfil.like(f"%{perfil_nome}%")).all()
     
     #chamar perfil.html para mostrar os dados
     return render_template("perfil.html", perfis=perfis)
