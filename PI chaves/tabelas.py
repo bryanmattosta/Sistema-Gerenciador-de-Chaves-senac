@@ -46,7 +46,7 @@ class Ambiente(Base):
     __tablename__       = "tb_ambiente"
     id_ambiente         = Column(Integer, primary_key=True)
     ambiente            = Column(String(150), nullable=True)
-    disponivel_ambiente = Column(Boolean)
+    disponivel_ambiente = Column(String(45))
     observacao_ambiente = Column(String(250))
 Base.metadata.create_all(engine)
 

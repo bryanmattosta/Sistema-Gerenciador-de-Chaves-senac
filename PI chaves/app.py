@@ -45,6 +45,18 @@ def usuario():
 def ambiente():
     return render_template('ambiente.html')
 
+#ambiente consultar
+@app.route("/ambiente/consultar",methods=["GET", "POST"])
+def consultar_ambiente():
+    #Pegar o ambiente informado
+    ambiente_nome = request.args.get("ambiente","")
+    
+    #consultar chave
+    ambientes = sessao.query(Ambiente).filter(Ambiente.ambiente.like(f"%{ambiente_nome}%"))
+    
+    #chamar p ambiente.html para mostrar dados
+    return render_template('ambiente.html', ambientes=ambientes)
+
 #perfil
 @app.route("/perfil")
 def perfil():
