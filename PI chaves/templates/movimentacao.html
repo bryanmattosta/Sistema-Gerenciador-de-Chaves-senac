@@ -8,21 +8,33 @@
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
-        <form class="row g-3">
-<!-- Criar for para perfil -->
+        <form class="row g-3" method="POST" action="{{ url_for('movimentacao') }}">
             <div class="col-md-12">
                 <label for="inputEmail4" class="form-label">Perfil</label>
-                <input type="text" class="form-control" id="inputEmail4">
+                <select name="perfil" class="form-select">
+                  <option selected>Selecione um perfil...</option>
+                  {% for perf in perfils %}
+                  <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
+                  {% endfor %}
+                </select>
             </div>
-<!-- Crirar for para Ambientes -->
             <div class="col-md-6">
                 <label for="inputPassword4" class="form-label">Ambiente</label>
-                <input type="password" class="form-control" id="inputPassword4">
+                <select name="ambiente" class="form-select">
+                    <option selected>Selecione o Ambiente</option>
+                    {% for ambiente in ambientes %} 
+                    <option value="{{ ambiente.id_ambiente }}">{{ ambiente.ambiente }}</option>
+                    {% endfor %}
+                </select>
             </div>
-<!-- Criar for para chaves -->
             <div class="col-6">
                 <label for="inputAddress" class="form-label">Chave</label>
-                <input type="text" class="form-control" id="inputAddress">
+                <Select name="chave" class="form-select">
+                    <option selected>Selecione a Chave</option>
+                    {% for chave in chaves %} 
+                    <option value="{{ chave.id_chave }}">{{ chave.nome_chave }}</option>
+                    {% endfor %}
+                </Select>
             </div>
             <div class="row col-12">
 
@@ -34,16 +46,16 @@
                         <!-- Data -->
                         <div>
                             <label for="dataReserva" class="form-label">Data</label>
-                            <input type="date" class="form-control" id="dataReserva">
+                            <input type="date" class="form-control" id="dataReserva" name="data_movimentacao">
                         </div>
 
                         <!-- Horário -->
                         <div>
                             <label class="form-label">Horário</label>
                             <div class="d-flex align-items-center gap-1">
-                                <input type="time" class="form-control" name="horario_inicio" id="horaInicio">
+                                <input type="time" class="form-control" name="horario_inicio_movimentacao" id="horaInicio">
                                 <span>:</span>
-                                <input type="time" class="form-control" name="horario_fim" id="horaFim">
+                                <input type="time" class="form-control" name="horario_fim_movimentacao" id="horaFim">
                             </div>
                         </div>
 

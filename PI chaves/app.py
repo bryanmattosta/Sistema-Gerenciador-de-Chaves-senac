@@ -19,7 +19,7 @@ def home():
     return render_template('index.html')
 
 
-#chave
+#chave #feito e #verificado
 @app.route("/chave", methods=["GET", "POST"])
 def chave():
 
@@ -50,7 +50,7 @@ def chave():
     return render_template('chave.html', ambientes=todos_ambiente)
 
 
-#alterar chave
+#alterar chave #falta ver
 @app.route("/chave/alterar/<int:id_chave>", methods=["GET", "POST"])
 def alterar_chave(id_chave):
     
@@ -81,7 +81,7 @@ def alterar_chave(id_chave):
     
     return render_template("alterar.chave.html", chave=chave)
 
-#chave excluir
+#chave excluir #falta ver
 @app.route("/chave/excluir/<int:id_chave>", methods=["POST"])
 def excluir_chave(id_chave):
     #buscar os dados o id_chave
@@ -98,7 +98,7 @@ def excluir_chave(id_chave):
     #retornar a tela principal do cliente
     return redirect(url_for("chave"))
 
-#chave consultar
+#chave consultar #feito e #verificado
 @app.route("/chave/consultar", methods=["GET", "POST"])
 def consultar_chave():
     #Pegar a chave foi informada
@@ -109,14 +109,19 @@ def consultar_chave():
     return render_template('chave.html', chaves=chaves)
 
 
-#usuario
-@app.route("/usuario")
+#usuario inserir feito
+@app.route("/usuario", methods=["GET", "POST"])
 def usuario():
+    
+    #pegar os perfils
+    todo_perfil = sessao.query(Perfil).all()
+    
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        nome_usuario = request.form.get("identificador")
-        email = request.form.get("observacao")
-        senha = request.form.get("disponivel")
+        nome_usuario = request.form.get("nome_usuario")
+        senha = request.form.get("senha_usuario")
+        email = request.form.get("email_usuario")
+        id_perfil    = request.form.get("perfil")
         
         # Validação do nome
         if nome_usuario == "":
@@ -124,16 +129,16 @@ def usuario():
             return render_template("usuario.html")
 
         #inserir usuário
-        u = Usuario(nome_usuario=nome_usuario, email=email, senha=senha)
-        sessao.add(u)
+        p = Usuario(nome_usuario=nome_usuario, email=email, senha=senha, id_perfil=id_perfil)
+        sessao.add(p)
         sessao.commit()
         flash("Usuário salvo com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("usuario"))
-    return render_template('usuario.html')
+    return render_template('usuario.html', perfils=todo_perfil)
 
-#consultar usuário
+#consultar usuário falta ver
 @app.route("/usuario/consultar", methods=["GET", "POST"])
 def consultar_usuario():
     
@@ -146,7 +151,7 @@ def consultar_usuario():
     #chamar usuario.html para mostrar os dados
     return render_template("usuario.html", usuarios=usuarios)
 
-#alterar usuario
+#alterar usuario falta ver
 @app.route("/usuario/alterar/<int:id_usuario>", methods=["GET", "POST"])
 def alterar_usuario(id_usuario):
     
@@ -176,7 +181,7 @@ def alterar_usuario(id_usuario):
     
     return render_template("alterar.usuario.html", usuario=usuario)
 
-#usuario excluir
+#usuario excluir falta ver
 @app.route("/usuario/excluir/<int:id_usuario>", methods=["POST"])
 def excluir_usuario(id_usuario):
     #buscar os dados o id_usuario
@@ -193,8 +198,8 @@ def excluir_usuario(id_usuario):
     #retornar a tela principal do usuario
     return redirect(url_for("usuario"))
 
-#ambiente
-@app.route("/ambiente")
+#ambiente 
+@app.route("/ambiente", methods=["GET", "POST"])
 def ambiente():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -218,7 +223,7 @@ def ambiente():
     return render_template('ambiente.html')
 
 
-#alterar ambiente
+#alterar ambiente falta ver
 @app.route("/ambiente/alterar/<int:id_ambiente>", methods=["GET", "POST"])
 def alterar_ambiente(id_ambiente):
     
@@ -248,7 +253,7 @@ def alterar_ambiente(id_ambiente):
     
     return render_template("alterar.ambiente.html", ambiente=ambiente)
 
-#ambiente excluir
+#ambiente excluir falta ver
 @app.route("/ambiente/excluir/<int:id_ambiente>", methods=["POST"])
 def excluir_ambiente(id_ambiente):
     #buscar os dados o id_ambiente
@@ -265,7 +270,7 @@ def excluir_ambiente(id_ambiente):
     #retornar a tela principal do ambiente
     return redirect(url_for("ambiente"))
 
-#ambiente consultar
+#ambiente consultar #feito e #verificado
 @app.route("/ambiente/consultar",methods=["GET", "POST"])
 def consultar_ambiente():
     #Pegar o ambiente informado
@@ -277,14 +282,14 @@ def consultar_ambiente():
     #chamar p ambiente.html para mostrar dados
     return render_template('ambiente.html', ambientes=ambientes)
 
-#perfil
-@app.route("/perfil")
+#perfil #feito
+@app.route("/perfil", methods=["GET", "POST"])
 def perfil():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        nome_perfil = request.form.get("ambiente")
-        matricula = request.form.get("matricula")
-        cargo = request.form.get("cargo")
+        nome_perfil = request.form.get("nome_perfil")
+        matricula = request.form.get("matricula_perfil")
+        cargo = request.form.get("cargo_perfil")
         
         # Validação do nome
         if nome_perfil == "":
@@ -292,16 +297,17 @@ def perfil():
             return render_template("perfil.html")
 
         #inserir perfil
-        p = Perfil(nome=nome_perfil, matricula=matricula, cargo=cargo)
+        p = Perfil(nome_perfil=nome_perfil, matricula=matricula, cargo=cargo)
         sessao.add(p)
         sessao.commit()
         flash("Perfil salvo com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("perfil"))
+   
     return render_template('perfil.html')
 
-#consultar perfil
+#consultar perfil #feito e #verificado
 @app.route("/perfil/consultar", methods=["GET", "POST"])
 def consultar_perfil():
     
@@ -315,7 +321,7 @@ def consultar_perfil():
     return render_template("perfil.html", perfis=perfis)
 
 
-#alterar perfil
+#alterar perfil falta ver
 @app.route("/perfil/alterar/<int:id_perfil>", methods=["GET", "POST"])
 def alterar_perfil(id_perfil):
     
@@ -345,7 +351,7 @@ def alterar_perfil(id_perfil):
     
     return render_template("alterar.perfil.html", perfil=perfil)
 
-#perfil excluir
+#perfil excluir falta ver
 @app.route("/perfil/excluir/<int:id_perfil>", methods=["POST"])
 def excluir_perfil(id_perfil):
     #buscar os dados o id_perfil
@@ -362,13 +368,24 @@ def excluir_perfil(id_perfil):
     #retornar a tela principal do perfil
     return redirect(url_for("perfil"))
 
-#movimentacao
-@app.route("/movimentacao")
+#movimentacao #feito
+@app.route("/movimentacao", methods=["GET", "POST"])
 def movimentacao():
+    
+    #pegar dados para for
+    perfils=sesao.query(Perfil).all()
+    chaves=sesao.query(Chave).all()
+    ambientes=sesao.query(Ambiente).all()
+    
+    
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_retirada = request.form.get("data_retirada")
-        horario_inicio = request.form.get("horario_inicio")
+        data_fim_movimentacao = request.form.get("data_fim_movimentacao")
+        horario_inicio_movimentacao = request.form.get("horario_inicio_movimentacao")
+        data_movimentacao = request.form.get("data_movimentacao")
+        id_perfil= request.form.get("perfil")
+        id_ambiente=request.form.get("ambiente")
+        id_chave=request.form.get("chave")
         
         # Validação da data de retirada
         if data_retirada == "":
@@ -376,14 +393,15 @@ def movimentacao():
             return render_template("movimentacao.html")
 
         #inserir movimentacao
-        m = Movimentacao(data_retirada=data_retirada, horario_inicio=horario_inicio)
+        m = Movimentacao(data_retirada_movimentacao=data_retirada_movimentacao, horario_inicio_movimentacao=horario_inicio_movimentacao, data_movimentacao=data_movimentacao, id_perfil=id_perfil, id_ambiente=id_ambiente, id_chave=id_chave)
         sessao.add(m)
         sessao.commit()
         flash("Movimentação salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("movimentacao"))
-    return render_template('movimentacao.html')
+    
+    return render_template('movimentacao.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
 
 #consultar movimentacao
 @app.route("/movimentacao/consultar", methods=["GET", "POST"])
@@ -445,13 +463,21 @@ def excluir_movimentacao(id_movimentacao):
     #retornar a tela principal da movimentacao
     return redirect(url_for("movimentacao"))
 
-#devolucao
-@app.route("/devolucao")
+#devolucao #feita
+@app.route("/devolucao", methods=["GET", "POST"])
 def devolucao():
+    
+    #pegar dados para for
+    perfils = sesao.query(Perfil).all()
+    reservas = sesao.query(Reserva).all()
+    
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
         date_reserva = request.form.get("data_reserva")
-        horario_devolucao= request.form.get("horario_devolucao")
+        horario_fim= request.form.get("horario_fim")
+        horario_inicio = request.form.get("horario_inicio")
+        id_perfil = request.form.get("perfil")
+        id_reserva = request.form.get("reserva")
         obsevacao_devolucao = request.form.get("observacao_devolucao")
         
         # Validação da data de reserva
@@ -460,14 +486,14 @@ def devolucao():
             return render_template("devolucao.html")
 
         #inserir devolucao
-        d = Movimentacao_devolucao(date_reserva=date_reserva, horario_devolucao=horario_devolucao, obsevacao_devolucao=obsevacao_devolucao)
+        d = Movimentacao_devolucao(date_reserva=date_reserva, horario_fim=horario_fim, obsevacao_devolucao=obsevacao_devolucao, id_perfil=id_perfil, id_reserva=id_reserva)
         sessao.add(d)
         sessao.commit()
         flash("Devolução salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("devolucao"))
-    return render_template('devolucao.html')
+    return render_template('devolucao.html', perfils=perfils, reservas=reservas)
 
 #consultar devolucao
 @app.route("/devolucao/consultar", methods=["GET", "POST"])
@@ -532,13 +558,24 @@ def excluir_devolucao(id_devolucao):
 
 
 #reserva
-@app.route("/reserva")
+@app.route("/reserva",  methods=["GET", "POST"])
 def reserva():
+    
+    #pegar dados para for
+    perfils=sesao.query(Perfil).all()
+    chaves=sesao.query(Chave).all()
+    ambientes=sesao.query(Ambiente).all()
+    
+    
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
         data_reserva = request.form.get("data_reserva")
-        horario_reserva= request.form.get("horario_reserva")
-        horario_reserva_fim = request.form.get("horario_reserva_fim")
+        horario_inicio_reserva= request.form.get("horario_reserva")
+        horario_fim_reserva = request.form.get("horario_reserva_fim")
+        id_perfil= request.form.get("perfil")
+        id_ambiente=request.form.get("ambiente")
+        id_chave=request.form.get("chave")
+        
         
         # Validação da data de reserva
         if data_reserva == "":
@@ -546,14 +583,15 @@ def reserva():
             return render_template("devolucao.html")
 
         #inserir reserva
-        r = Reserva(date_reserva=data_reserva, horario_reserva=horario_reserva, horario_reserva_fim=horario_reserva_fim)
+        r = Reserva(date_reserva=data_reserva, horario_reserva=horario_reserva, horario_reserva_fim=horario_reserva_fim, id_ambiente=id_ambiente, id_chave=id_chave, id_perfil=id_perfil)
         sessao.add(r)
         sessao.commit()
         flash("Reserva salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("reserva"))
-    return render_template('reserva.html')
+    
+    return render_template('reserva.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
 
 #consultar reserva
 @app.route("/reserva/consultar", methods=["GET", "POST"])

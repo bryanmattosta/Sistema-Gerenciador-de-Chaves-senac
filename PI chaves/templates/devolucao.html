@@ -8,16 +8,25 @@
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
-        <form class="row g-3">
-<!-- Criar for para perfil -->
+        <form class="row g-3" method="POST" action="{{ url_for('devolucao') }}">
             <div class="col-md-6">
                 <label for="inputEmail4" class="form-label">Perfil</label>
-                <input type="text" class="form-control" id="inputEmail4">
+                <select name="perfil" class="form-select">
+                    <option selected>Selecione um perfil...</option>
+                    {% for perfil in perfils %}
+                    <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
+                    {% endfor %}
+                </select>
             </div>
-<!-- Crirar for para Reserva -->
+<!-- alterar dps nao pode ser for tem que ser um campo normal com verificacao no app -->
             <div class="col-md-6">
                 <label for="inputPassword4" class="form-label">Numero de Reserva</label>
-                <input type="password" class="form-control" id="inputPassword4">
+                <select name="reserva"class="form-select">
+                    <option selected>Selecione um perfil...</option>
+                    {% for reserva in reservas %}
+                    <option value="{{ reserva.id_reserva }}">{{ reserva.id_reserva }}</option>
+                    {% endfor %}                    
+                </select>
             </div>
             <div class="row col-12">
 
@@ -29,13 +38,13 @@
                          <!-- Observacao -->
                         <div class="col-8">
                             <label for="dataReserva" class="form-label">Observação</label>
-                            <input type="text" class="form-control" id="dataReserva">
+                            <input type="text" class="form-control" id="dataReserva" name="Observacao_devolucao">
                         </div>
 
                         <!-- Data -->
                         <div>
                             <label for="dataReserva" class="form-label">Data</label>
-                            <input type="date" class="form-control" id="dataReserva">
+                            <input type="date" class="form-control" id="dataReserva" name="data_devolucao">
                         </div>
 
                         <!-- Horário -->

@@ -7,18 +7,18 @@
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
-        <form class="row g-3">
+        <form class="row g-3" method="POST" action="{{ url_for('perfil') }}">
             <div class="col-md-6">
-                <label for="inputEmail4" class="form-label">Nome de Usuario</label>
-                <input type="text" name="nome_usuario" class="form-control" placeholder="Nome do usuario">
+                <label for="inputEmail4" class="form-label">Nome de Perfil</label>
+                <input type="text" name="nome_perfil" class="form-control" placeholder="Nome do Perfil">
             </div>
             <div class="col-md-6">
                 <label for="inputPassword4" class="form-label">Cargo</label>
-                <input type="password" name="senha_usuario" class="form-control" placeholder="Cargo do Perfil">
+                <input type="text" name="cargo_perfil" class="form-control" placeholder="Cargo do Perfil">
             </div>
             <div class="col-6">
                 <label for="inputAddress" class="form-label">Matricula</label>
-                <input type="email" name="email_usuario" class="form-control" id="inputAddress" placeholder="Numero de Matricula">
+                <input type="number" name="matricula_perfil" class="form-control" id="inputAddress" placeholder="Numero de Matricula">
             </div>
             <div class="col-6">
                 <label for="inputAddress2" class="form-label">Foto do Usuario</label>
