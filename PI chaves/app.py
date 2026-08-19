@@ -20,15 +20,19 @@ def home():
 
 
 #chave
-@app.route("/chave")
+@app.route("/chave", methods=["GET", "POST"])
 def chave():
 
+    #lista de todas chaves
+    todos_ambientes = sessao.query(Ambiente).all()
+        
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
         identificador = request.form.get("identificador")
         observacao = request.form.get("observacao")
         disponivel = request.form.get("disponivel")
         nome_chave = request.form.get("nome_chave")
+        id_ambiente = request.form.get("ambiente")
         
         # Validação do nome
         if nome_chave == "":
@@ -36,14 +40,14 @@ def chave():
             return render_template("chave.html")
 
         #inserir chave
-        c = Chave(identificador=identificador, observacao=observacao, disponivel=disponivel, nome_chave=nome_chave)
+        c = Chave(identificador=identificador, observacao=observacao, disponivel=disponivel, nome_chave=nome_chave, id_ambiente=id_ambiente)
         sessao.add(c)
         sessao.commit()
         flash("Chave salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("chave"))
-    return render_template('chave.html')
+    return render_template('chave.html', ambientes=todos_ambientes)
 
 
 #alterar chave
@@ -106,7 +110,7 @@ def consultar_chave():
 
 
 #usuario
-@app.route("/usuario")
+@app.route("/usuario", methods=["GET", "POST"])
 def usuario():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -190,7 +194,7 @@ def excluir_usuario(id_usuario):
     return redirect(url_for("usuario"))
 
 #ambiente
-@app.route("/ambiente")
+@app.route("/ambiente", methods=["GET", "POST"])
 def ambiente():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -274,7 +278,7 @@ def consultar_ambiente():
     return render_template('ambiente.html', ambientes=ambientes)
 
 #perfil
-@app.route("/perfil")
+@app.route("/perfil", methods=["GET", "POST"])
 def perfil():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -359,7 +363,7 @@ def excluir_perfil(id_perfil):
     return redirect(url_for("perfil"))
 
 #movimentacao
-@app.route("/movimentacao")
+@app.route("/movimentacao", methods=["GET", "POST"])
 def movimentacao():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -442,7 +446,7 @@ def excluir_movimentacao(id_movimentacao):
     return redirect(url_for("movimentacao"))
 
 #devolucao
-@app.route("/devolucao")
+@app.route("/devolucao", methods=["GET", "POST"])
 def devolucao():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -528,7 +532,7 @@ def excluir_devolucao(id_devolucao):
 
 
 #reserva
-@app.route("/reserva")
+@app.route("/reserva", methods=["GET", "POST"])
 def reserva():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -613,7 +617,7 @@ def excluir_reserva(id_reserva):
     return redirect(url_for("reserva"))
 
 #historico
-@app.route("/historico")
+@app.route("/historico", methods=["GET"])
 def historico():
     return render_template('historico.html')
 

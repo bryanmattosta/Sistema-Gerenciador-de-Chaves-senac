@@ -10,7 +10,7 @@
         <h3 id="tema_chave" style="text-align: center;">Cadastro de Chave</h3>
         <hr>
       <div class="card-body">
-        <form class="row g-3">
+        <form class="row g-3" METHOD="POST" action="{{ url_for('chave') }}">
             <div class="col-md-6">
                 <label for="inputEmail4" class="form-label">Nome da Chave</label>
                 <input type="text" class="form-control" id="inputEmail4" name="nome_chave" placeholder="Chave Laboratorio...">
@@ -23,10 +23,15 @@
                 <label for="inputAddress2" class="form-label">Foto da Chave</label>
                 <input type ="file" class="form-control" id="inputAddress2" name="foto">
             </div>
-            <!-- adicionar o for dps -->
+
             <div class="col-6">
                 <label for="inputAddress" class="form-label">Ambiente</label>
-                <input type="text" class="form-control" id="inputAddress" name="ambiente">
+                <select class="form-select" aria-label="Default select example" name="ambiente">
+                    <option selected>Selecione o ambiente</option>
+                    {% for ambiente in ambientes %}
+                    <option value="{{ ambiente.id_ambiente}}">{{ ambiente.ambiente }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="col-12">
                 <button id="cadastrar_chave" type="submit" class="btn btn-primary">Cadastrar</button>
