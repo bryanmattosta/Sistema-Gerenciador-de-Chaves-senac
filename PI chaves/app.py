@@ -20,8 +20,11 @@ def home():
 
 
 #chave
-@app.route("/chave")
+@app.route("/chave", methods=["GET", "POST"])
 def chave():
+
+    #lista de todas chaves
+    todos_ambiente = sessao.query(Ambiente).all()
 
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
@@ -29,6 +32,7 @@ def chave():
         observacao = request.form.get("observacao")
         disponivel = request.form.get("disponivel")
         nome_chave = request.form.get("nome_chave")
+        id_ambiente = request.form.get("ambiente")
         
         # Validação do nome
         if nome_chave == "":
@@ -36,14 +40,14 @@ def chave():
             return render_template("chave.html")
 
         #inserir chave
-        c = Chave(identificador=identificador, observacao=observacao, disponivel=disponivel, nome_chave=nome_chave)
+        c = Chave(identificador=identificador, observacao=observacao, disponivel=disponivel, nome_chave=nome_chave, id_ambiente=id_ambiente)
         sessao.add(c)
         sessao.commit()
         flash("Chave salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("chave"))
-    return render_template('chave.html')
+    return render_template('chave.html', ambientes=todos_ambiente)
 
 
 #alterar chave
