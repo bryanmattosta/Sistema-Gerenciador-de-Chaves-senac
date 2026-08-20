@@ -408,7 +408,7 @@ def movimentacao():
     return render_template('movimentacao.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
 
 #consultar movimentacao
-@app.route("/movimentacao/consultar", methods=["GET", "POST"])
+@app.route("/movimentacao/consultar", methods=["GET"])
 def consultar_movimentacao():
     
     #pegar a movimentacao que foi informada no formulário
@@ -417,13 +417,13 @@ def consultar_movimentacao():
     #pegar dados de outras tabelas
     movimentacao_dados = (
         sessao.query(Movimentacao, Perfil, Chave, Ambiente, Reserva)
-        .join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
-        .join(Chave, Movimentacao.id_chave == Chave.id_chave)
-        .join(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambinete)
-        .join(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
-        .filter(Movimentacao.data_movimentacao.like(f"%{data_movimentacao}%"))
-        .join()
-        .all() )
+        .outerjoin(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
+        .outerjoin(Chave, Movimentacao.id_chave == Chave.id_chave)
+        .outerjoin(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambiente)
+        .outerjoin(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
+        .filter(Movimentacao.data_movimentacao == data_movimentacao)
+        .all()
+        )
     
     
     

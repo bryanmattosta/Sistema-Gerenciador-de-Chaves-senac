@@ -82,21 +82,21 @@
     <hr>
     <div class="col-12">
     <div class="d-flex justify-content-center">
-      <form class="d-flex" method="POST" action="{{ url_for('consultar_movimentacao') }}">
-        <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o Movimentação" name="data_movimentacao">
-        <button class="btn btn-primary" type="button">Buscar</button>
+      <form class="d-flex" method="GET" action="{{ url_for('consultar_movimentacao') }}">
+        <input type="date"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o Movimentação" name="data_movimentacao">
+        <button class="btn btn-primary" type="submit">Buscar</button>
       </form>
     </div>
     </div>
     <hr>
 <div class="d-flex gap-3">
-{% for usuario, perfil, chave, ambiente, movimentacao reserva in movimentacoes %}
+{% for movimentacao, perfil, chave, ambiente, reserva in movimentacoes %}
 <div class="card" style="width: 18rem;">
   <img src="..." class="card-img-top" alt="...">
   <div class="card-body">
       <p class="card-text">Foto do usuario</p>
-    <h5 class="card-title">{{ usuario.nome_usuario }}</h5>
-    <h3 class="card-title">ID: {{ reserva.id_reserva }} Ambiente: {{ ambiente.ambiente }} Chave: {{ chave.indentificador }}</h3>
+    <h5 class="card-title">{{ perfil.nome_perfil }}</h5>
+    <h3 class="card-title">ID: {{ reserva.id_reserva }} Ambiente: {{ ambiente.ambiente }} Chave: {{ chave.identificador }}</h3>
   </div>
   <ul class="list-group list-group-flush">
     <li class="list-group-item"> {{ movimentacao.data_movimentacao }}</li>
