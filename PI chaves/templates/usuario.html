@@ -24,7 +24,7 @@
                 <label for="inputAddress2" class="form-label">Perf</label>
                 <select name="perfil" class="form-select">
                   <option selected>Selecione um perfil...</option>
-                  {% for perf in perfils %}
+                  {% for perfil in perfils %}
                   <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
                   {% endfor %}
                 </select>

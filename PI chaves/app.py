@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from tabelas import engine, Base, Chave, Usuario, Perfil, Ambiente, Movimentacao, Reserva, Movimentacao_devolucao
+from tabelas import engine, Base, Chave, Usuario, Perfil, Ambiente, Movimentacao, Reserva, Devolucao
 
 
 #cria a sesao
@@ -203,7 +203,7 @@ def excluir_usuario(id_usuario):
 def ambiente():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        ambiente = request.form.get("ambiente")
+        ambiente = request.form.get("nome_ambiente")
         observacao_ambiente = request.form.get("observacao_ambiente")
         disponivel_ambiente = request.form.get("disponivel_ambiente")
         
@@ -213,13 +213,14 @@ def ambiente():
             return render_template("ambiente.html")
 
         #inserir ambiente
-        a = Ambiente(ambiente=ambiente, observacao=observacao_ambiente, disponivel=disponivel_ambiente)
+        a = Ambiente(ambiente=ambiente, observacao_ambiente=observacao_ambiente, disponivel_ambiente=disponivel_ambiente)
         sessao.add(a)
         sessao.commit()
         flash("Ambiente salvo com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("ambiente"))
+    
     return render_template('ambiente.html')
 
 
@@ -373,27 +374,27 @@ def excluir_perfil(id_perfil):
 def movimentacao():
     
     #pegar dados para for
-    perfils=sesao.query(Perfil).all()
-    chaves=sesao.query(Chave).all()
-    ambientes=sesao.query(Ambiente).all()
-    
+    perfils=sessao.query(Perfil).all()
+    chaves=sessao.query(Chave).all()
+    ambientes=sessao.query(Ambiente).all()
     
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_fim_movimentacao = request.form.get("data_fim_movimentacao")
-        horario_inicio_movimentacao = request.form.get("horario_inicio_movimentacao")
+        data_movimentacao = request.form.get("data_fim_movimentacao")
+        hora_inicio_movimentacao = request.form.get("hora_inicio_movimentacao")
+        hora_fim_movimentacao = request.form.get("hora_fim_movimentacao")
         data_movimentacao = request.form.get("data_movimentacao")
         id_perfil= request.form.get("perfil")
         id_ambiente=request.form.get("ambiente")
         id_chave=request.form.get("chave")
         
         # Validação da data de retirada
-        if data_retirada == "":
+        if data_movimentacao == "":
             flash("Data de retirada é obrigatória!", "danger")
             return render_template("movimentacao.html")
 
         #inserir movimentacao
-        m = Movimentacao(data_retirada_movimentacao=data_retirada_movimentacao, horario_inicio_movimentacao=horario_inicio_movimentacao, data_movimentacao=data_movimentacao, id_perfil=id_perfil, id_ambiente=id_ambiente, id_chave=id_chave)
+        m = Movimentacao(hora_inicio_movimentacao=hora_inicio_movimentacao, hora_fim_movimentacao=hora_fim_movimentacao, data_movimentacao=data_movimentacao, id_perfil=id_perfil, id_ambiente=id_ambiente, id_chave=id_chave)
         sessao.add(m)
         sessao.commit()
         flash("Movimentação salva com sucesso!", "success")
@@ -468,25 +469,25 @@ def excluir_movimentacao(id_movimentacao):
 def devolucao():
     
     #pegar dados para for
-    perfils = sesao.query(Perfil).all()
-    reservas = sesao.query(Reserva).all()
+    perfils = sessao.query(Perfil).all()
+    reservas = sessao.query(Reserva).all()
     
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        date_reserva = request.form.get("data_reserva")
-        horario_fim= request.form.get("horario_fim")
-        horario_inicio = request.form.get("horario_inicio")
+        data_devolucao = request.form.get("data_devolucao")
+        hora_inicio_devolucao = request.form.get("hora_inicio_devolucao")
+        hora_fim_devolucao = request.form.get("hora_fim_devolucao")
         id_perfil = request.form.get("perfil")
         id_reserva = request.form.get("reserva")
-        obsevacao_devolucao = request.form.get("observacao_devolucao")
+        observacao_devoluca = request.form.get("observacao_devolucao")
         
         # Validação da data de reserva
-        if date_reserva == "":
+        if data_devolucao == "":
             flash("Data de reserva é obrigatória!", "danger")
             return render_template("devolucao.html")
 
         #inserir devolucao
-        d = Movimentacao_devolucao(date_reserva=date_reserva, horario_fim=horario_fim, obsevacao_devolucao=obsevacao_devolucao, id_perfil=id_perfil, id_reserva=id_reserva)
+        d = Devolucao(data_devolucao=data_devolucao, hora_fim_devolucao=hora_fim_devolucao, hora_inicio_devolucao=hora_inicio_devolucao, observacao_devoluca=observacao_devoluca, id_perfil=id_perfil, id_reserva=id_reserva)
         sessao.add(d)
         sessao.commit()
         flash("Devolução salva com sucesso!", "success")
@@ -503,7 +504,7 @@ def consultar_devolucao():
     date_reserva = request.args.get("date_reserva","")
     
     #consultar a(s) devolucao(oes)
-    devolucoes = sessao.query(Movimentacao_devolucao).filter(Movimentacao_devolucao.date_reserva.like(f"%{date_reserva}%")).all()
+    devolucoes = sessao.query(devolucao).filter(devolucao.date_reserva.like(f"%{date_reserva}%")).all()
     
     #chamar devolucao.html para mostrar os dados
     return render_template("devolucao.html", devolucoes=devolucoes)
@@ -514,7 +515,7 @@ def consultar_devolucao():
 def alterar_devolucao(id_devolucao):
     
     #buscar os dados o id_devolucao
-    devolucao = sessao.query(Movimentacao_devolucao).get(id_devolucao)
+    devolucao = sessao.query(devolucao).get(id_devolucao)
     
     #valida se existe a devolucao com a id_devolucao informada
     if devolucao is None:
@@ -543,7 +544,7 @@ def alterar_devolucao(id_devolucao):
 @app.route("/devolucao/excluir/<int:id_devolucao>", methods=["POST"])
 def excluir_devolucao(id_devolucao):
     #buscar os dados o id_devolucao
-    devolucao = sessao.query(Movimentacao_devolucao).get(id_devolucao)
+    devolucao = sessao.query(devolucao).get(id_devolucao)
 
     #realizar a exclusao da devolucao
     if devolucao:
@@ -562,16 +563,16 @@ def excluir_devolucao(id_devolucao):
 def reserva():
     
     #pegar dados para for
-    perfils=sesao.query(Perfil).all()
-    chaves=sesao.query(Chave).all()
-    ambientes=sesao.query(Ambiente).all()
+    perfils=sessao.query(Perfil).all()
+    chaves=sessao.query(Chave).all()
+    ambientes=sessao.query(Ambiente).all()
     
     
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
         data_reserva = request.form.get("data_reserva")
-        horario_inicio_reserva= request.form.get("horario_reserva")
-        horario_fim_reserva = request.form.get("horario_reserva_fim")
+        hora_inicio_reserva= request.form.get("horario_reserva")
+        hora_fim_reserva = request.form.get("horario_reserva_fim")
         id_perfil= request.form.get("perfil")
         id_ambiente=request.form.get("ambiente")
         id_chave=request.form.get("chave")
@@ -583,7 +584,7 @@ def reserva():
             return render_template("devolucao.html")
 
         #inserir reserva
-        r = Reserva(date_reserva=data_reserva, horario_reserva=horario_reserva, horario_reserva_fim=horario_reserva_fim, id_ambiente=id_ambiente, id_chave=id_chave, id_perfil=id_perfil)
+        r = Reserva(data_reserva=data_reserva, hora_inicio_reserva=hora_inicio_reserva, hora_fim_reserva=hora_fim_reserva, id_ambiente=id_ambiente, id_chave=id_chave, id_perfil=id_perfil)
         sessao.add(r)
         sessao.commit()
         flash("Reserva salva com sucesso!", "success")

@@ -13,7 +13,7 @@
                 <label for="inputEmail4" class="form-label">Perfil</label>
                 <select name="perfil" class="form-select">
                   <option selected>Selecione um perfil...</option>
-                  {% for perf in perfils %}
+                  {% for perfil in perfils %}
                   <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
                   {% endfor %}
                 </select>
@@ -53,9 +53,9 @@
                         <div>
                             <label class="form-label">Horário</label>
                             <div class="d-flex align-items-center gap-1">
-                                <input type="time" class="form-control" name="horario_inicio_movimentacao" id="horaInicio">
+                                <input type="time" class="form-control" name="hora_inicio_movimentacao" id="horaInicio">
                                 <span>:</span>
-                                <input type="time" class="form-control" name="horario_fim_movimentacao" id="horaFim">
+                                <input type="time" class="form-control" name="hora_fim_movimentacao" id="horaFim">
                             </div>
                         </div>
 
