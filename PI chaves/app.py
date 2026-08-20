@@ -285,6 +285,7 @@ def consultar_ambiente():
     #chamar p ambiente.html para mostrar dados
     return render_template('ambiente.html', ambientes=ambientes)
 
+#alterado
 #perfil
 @app.route("/perfil", methods=["GET", "POST"])
 def perfil():
