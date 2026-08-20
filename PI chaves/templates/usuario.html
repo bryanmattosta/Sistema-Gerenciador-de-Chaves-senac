@@ -7,7 +7,7 @@
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
-        <form class="row g-3">
+        <form class="row g-3" method="POST" action="{{ url_for('usuario') }}">
             <div class="col-md-6">
                 <label for="inputEmail4" class="form-label">Nome de Usuario</label>
                 <input type="text" name="nome_usuario" class="form-control" placeholder="Nome do usuario">
@@ -20,10 +20,14 @@
                 <label for="inputAddress" class="form-label">E-mail</label>
                 <input type="email" name="email_usuario" class="form-control" id="inputAddress" placeholder="joao@senac.df.br">
             </div>
-<!-- adicionar o for dps para perf -->
             <div class="col-6">
                 <label for="inputAddress2" class="form-label">Perf</label>
-                <input type="text" class="form-control" id="inputAddress2" >
+                <select name="perfil" class="form-select">
+                  <option selected>Selecione um perfil...</option>
+                  {% for perfil in perfils %}
+                  <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
+                  {% endfor %}
+                </select>
             </div>
             <div class="col-12">
                 <button type="submit" id="cadastrar_usuario" class="btn btn-primary">Cadastrar Usuario</button>
@@ -31,36 +35,39 @@
         </form>
       </div>
     </div>
-
+<br>
 <!-- card pesquisa -->
  <div class="card mb-3" id="card_chave">
-    <h3 style="text-align: center;">Pesquisa Chave</h1>
+    <h3 style="text-align: center;">Pesquisa Usuario</h1>
     <hr>
     <div class="col-12">
     <div class="d-flex justify-content-center">
-        <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise a chave">
+      <form class="d-flex" method="POST" action="{{ url_for('consultar_usuario') }}">
+        <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o usuario" name="usuario">
         <button class="btn btn-primary" type="button">Buscar</button>
+      </form>
     </div>
     </div>
     <hr>
 <div class="d-flex gap-3">
-<!-- for para cada chave -->
+{% for usuario, perfil in dados %}
 <div class="card" style="width: 18rem;">
   <img src="..." class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Nome da chave</h5>
-    <p class="card-text">identificador</p>
+    <h5 class="card-title">{{ usuario.nome_usuario }}</h5>
+    <p class="card-text">Foto do usuario</p>
   </div>
   <ul class="list-group list-group-flush">
-    <li class="list-group-item">Observação</li>
-    <li class="list-group-item">Disponivel</li>
+    <li class="list-group-item">Email: {{ usuario.email }}</li>
+    <li class="list-group-item">Senha: {{ usuario.senha }}</li>
+    <li class="list-group-item">Perfil: {{ perfil.nome_perfil }}</li>
   </ul>
   <div class="card-body">
     <button type="button" class="btn btn-outline-warning">Editar</button>
     <button type="button" class="btn btn-outline-danger">Deletar</button>
   </div>
 </div>
-<!-- final for -->
+{% endfor %}
  
 </div>
 {% endblock %}

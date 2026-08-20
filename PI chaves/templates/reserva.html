@@ -7,20 +7,33 @@
 {% block conteudo %}
     <div class="card">
       <div class="card-body">
-        <form class="row g-3">
+        <form class="row g-3" method="POST" action="{{ url_for('reserva') }}">
             <div class="col-md-12">
                 <label for="inputEmail4" class="form-label">Perfil</label>
-                <input type="text" class="form-control" id="inputEmail4">
+                <select name="perfil" class="form-select">
+                  <option selected>Selecione um perfil...</option>
+                  {% for perfil in perfils %}
+                  <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
+                  {% endfor %}
+                </select>
             </div>
-<!-- Crirar for para Ambientes -->
             <div class="col-md-6">
                 <label for="inputPassword4" class="form-label">Ambiente</label>
-                <input type="password" class="form-control" id="inputPassword4">
+                <select name="ambiente" class="form-select">
+                    <option selected>Selecione o Ambiente</option>
+                    {% for ambiente in ambientes %} 
+                    <option value="{{ ambiente.id_ambiente }}">{{ ambiente.ambiente }}</option>
+                    {% endfor %}
+                </select>
             </div>
-<!-- Criar for para chaves -->
             <div class="col-6">
                 <label for="inputAddress" class="form-label">Chave</label>
-                <input type="text" class="form-control" id="inputAddress">
+                <Select name="chave" class="form-select">
+                    <option selected>Selecione a Chave</option>
+                    {% for chave in chaves %} 
+                    <option value="{{ chave.id_chave }}">{{ chave.nome_chave }}</option>
+                    {% endfor %}
+                </Select>
             </div>
             <div class="row col-12">
 
@@ -32,16 +45,16 @@
                         <!-- Data -->
                         <div>
                             <label for="dataReserva" class="form-label">Data Reserva</label>
-                            <input type="date" class="form-control" id="dataReserva">
+                            <input type="date" class="form-control" id="dataReserva" name="data_reserva">
                         </div>
 
                         <!-- Horário -->
                         <div>
                             <label class="form-label">Horário Reserva</label>
                             <div class="d-flex align-items-center gap-1">
-                                <input type="time" class="form-control" name="horario_reserva" id="horaInicio">
+                                <input type="time" class="form-control" name="horario_reserva" id="hora_inicio_reserva">
                                 <span>:</span>
-                                <input type="time" class="form-control" name="horario_reserva_fim" id="horaFim">
+                                <input type="time" class="form-control" name="horario_reserva_fim" id="hora_fim_reserva">
                             </div>
                         </div>
 
@@ -59,4 +72,45 @@
         </form>
       </div>
     </div>
+
+
+ <!-- card pesquisa -->
+ <div class="card mb-3" id="card_chave">
+    <h3 style="text-align: center;">Pesquisa por ID da reserva</h1>
+    <hr>
+    <div class="col-12">
+    <div class="d-flex justify-content-center">
+      <form method="get" action="{{ url_for('consultar_reserva') }}" role="search">
+        <div class="d-flex justify-content-center">  
+          <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o ID" name="reserva">
+          <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+      </form>
+    </div>
+    </div>
+    <hr>
+<div class="d-flex gap-3">
+{% for reserva in reservas %}
+<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <!-- depois colocar um randon codigo para reserva -->
+    <h5 class="card-title">{{ reserva.id_reserva }}</h5>
+    <h3 class="card-title">Foto</h3>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">{{ perfil.nome_perfil}}</li>
+    <li class="list-group-item">{{ perfil.matricula }}</li>
+    <li class="list-group-item">{{ perfil.cargo }}</li>
+    <li class="list-group-item">{{ reserva.data_reserva }}</li>
+    <li class="list-group-item">{{ reserva.hora_inicial_reserva }}</li>
+    <li class="list-group-item">{{ reserva.hora_fim_reserva }}</li>
+  </ul>
+  <div class="card-body">
+    <button type="button" class="btn btn-outline-warning">Editar</button>
+    <button type="button" class="btn btn-outline-danger">Deletar</button>
+  </div>
+</div>
+{% endfor %}
+</div>
 {% endblock %}

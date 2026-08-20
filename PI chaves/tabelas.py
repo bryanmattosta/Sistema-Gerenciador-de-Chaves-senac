@@ -45,7 +45,7 @@ Base.metadata.create_all(engine)
 class Ambiente(Base):
     __tablename__       = "tb_ambiente"
     id_ambiente         = Column(Integer, primary_key=True)
-    ambiente            = Column(String(150), nullable=True)
+    ambiente            = Column(String(150))
     disponivel_ambiente = Column(String(45))
     observacao_ambiente = Column(String(250))
 Base.metadata.create_all(engine)
@@ -58,9 +58,10 @@ class Movimentacao(Base):
     id_chave           = Column(Integer)
     id_perfil          = Column(Integer)
     id_ambiente        = Column(Integer)
-    data_retirada      = Column(Date)
+    data_movimentacao  = Column(Date)
     id_reserva         = Column(Integer)
-    horario_inicio     = Column(Time)
+    hora_inicio_movimentacao = Column(Time)
+    hora_fim_movimentacao = Column(Time)
 Base.metadata.create_all(engine)
 
 
@@ -70,20 +71,22 @@ class Reserva(Base):
     id_reserva          = Column(Integer, primary_key=True)
     id_chave            = Column(Integer)
     id_ambiente         = Column(Integer)
-    id_perfil          = Column(Integer)
+    id_perfil           = Column(Integer)
     data_reserva        = Column(Date)
-    horario_reserva     = Column(Time)
-    horario_reserva_fim = Column(Time)
+    hora_inicio_reserva = Column(Time)
+    hora_fim_reserva    = Column(Time)
 Base.metadata.create_all(engine)
 
 
 #Criando tabela banco de dados movimentacao_devolucao
-class Movimentacao_devolucao(Base):
-    __tablename__       = "tb_movimentacao_devolucao"
+class Devolucao(Base):
+    __tablename__       = "tb_devolucao"
     id_devolucao        = Column(Integer, primary_key=True)
     id_reserva          = Column(Integer)
-    date_reserva        = Column(Date)
-    horario_devolucao   = Column(Time)
-    obsevacao_devolucao = Column(String(250))
+    id_perfil            = Column(Integer)
+    data_devolucao       = Column(Date)
+    hora_fim_devolucao   = Column(Time)
+    hora_inicio_devolucao   = Column(Time)
+    observacao_devoluca = Column(String(250))
 Base.metadata.create_all(engine)
 
