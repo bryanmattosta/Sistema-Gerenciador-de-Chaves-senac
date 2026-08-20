@@ -2,6 +2,7 @@
     min-height: calc(20vh - 140px);
     /* background-color: blue; */
     border-radius: 5px;
+    margin-bottom: 0px;
 }
 
 
@@ -11,6 +12,7 @@
     /* border: 5px solid black; */
     margin: 0em 0em 0em;
     padding: 8em;
+    margin-top: 0em;
     
 }
 
