@@ -145,11 +145,11 @@ def consultar_usuario():
     #pegar o usuário que foi informado no formulário
     nome_usuario = request.args.get("usuario","")
     
-    #consultar o(s) usuário(s)
-    usuarios = sessao.query(Usuario).filter(Usuario.nome_usuario.like(f"%{nome_usuario}%")).all()
+    #importar outra tabela para pegar o nome do perfil
+    usuarios_perfis = sessao.query(Usuario, Perfil).join(Perfil, Usuario.id_perfil == Perfil.id_perfil).filter(Usuario.nome_usuario.like(f"%{nome_usuario}%")).all()
     
     #chamar usuario.html para mostrar os dados
-    return render_template("usuario.html", usuarios=usuarios)
+    return render_template("usuario.html", dados=usuarios_perfis)
 
 #alterar usuario falta ver
 @app.route("/usuario/alterar/<int:id_usuario>", methods=["GET", "POST"])
