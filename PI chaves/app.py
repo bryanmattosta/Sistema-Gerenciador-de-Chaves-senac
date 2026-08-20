@@ -138,6 +138,8 @@ def usuario():
         return redirect(url_for("usuario"))
     return render_template('usuario.html', perfils=todo_perfil)
 
+#
+                                            #verificar se esta tudo ok
 #consultar usuário falta ver
 @app.route("/usuario/consultar", methods=["GET", "POST"])
 def consultar_usuario():
@@ -409,13 +411,26 @@ def movimentacao():
 def consultar_movimentacao():
     
     #pegar a movimentacao que foi informada no formulário
-    data_retirada = request.args.get("data_retirada","")
+    data_movimentacao = request.args.get("data_movimentacao","")
+    
+    #pegar dados de outras tabelas
+    movimentacao_dados = (
+        sessao.query(Movimentacao, Perfil, Chave, Ambiente, Reserva)
+        .join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
+        .join(Chave, Movimentacao.id_chave == Chave.id_chave)
+        .join(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambinete)
+        .join(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
+        .filter(Movimentacao.data_movimentacao.like(f"%{data_movimentacao}%"))
+        .join()
+        .all() )
+    
+    
     
     #consultar o(s) movimentacao(s)
-    movimentacoes = sessao.query(Movimentacao).filter(Movimentacao.data_retirada.like(f"%{data_retirada}%")).all()
+    # movimentacoes = sessao.query(Movimentacao).filter(Movimentacao.data_movimentacaoa.like(f"%{data_movimentacao}%")).all()
     
     #chamar movimentacao.html para mostrar os dados
-    return render_template("movimentacao.html", movimentacoes=movimentacoes)
+    return render_template("movimentacao.html", movimentacoes=movimentacao_dados)
 
 
 #alterar movimentacao
