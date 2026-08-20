@@ -72,4 +72,45 @@
         </form>
       </div>
     </div>
+
+
+ <!-- card pesquisa -->
+ <div class="card mb-3" id="card_chave">
+    <h3 style="text-align: center;">Pesquisa por ID da reserva</h1>
+    <hr>
+    <div class="col-12">
+    <div class="d-flex justify-content-center">
+      <form method="get" action="{{ url_for('consultar_reserva') }}" role="search">
+        <div class="d-flex justify-content-center">  
+          <input type="text"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o ID" name="reserva">
+          <button class="btn btn-primary" type="submit">Buscar</button>
+        </div>
+      </form>
+    </div>
+    </div>
+    <hr>
+<div class="d-flex gap-3">
+{% for reserva in reservas %}
+<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+  <div class="card-body">
+    <!-- depois colocar um randon codigo para reserva -->
+    <h5 class="card-title">{{ reserva.id_reserva }}</h5>
+    <h3 class="card-title">Foto</h3>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">{{ perfil.nome_perfil}}</li>
+    <li class="list-group-item">{{ perfil.matricula }}</li>
+    <li class="list-group-item">{{ perfil.cargo }}</li>
+    <li class="list-group-item">{{ reserva.data_reserva }}</li>
+    <li class="list-group-item">{{ reserva.hora_inicial_reserva }}</li>
+    <li class="list-group-item">{{ reserva.hora_fim_reserva }}</li>
+  </ul>
+  <div class="card-body">
+    <button type="button" class="btn btn-outline-warning">Editar</button>
+    <button type="button" class="btn btn-outline-danger">Deletar</button>
+  </div>
+</div>
+{% endfor %}
+</div>
 {% endblock %}

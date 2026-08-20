@@ -599,10 +599,15 @@ def reserva():
 def consultar_reserva():
     
     #pegar a reserva que foi informada no formulário
-    data_reserva = request.args.get("data_reserva","")
+    reserva = request.args.get("reserva","")
     
     #consultar a(s) reserva(s)
-    reservas = sessao.query(Reserva).filter(Reserva.data_reserva.like(f"%{data_reserva}%")).all()
+    reservas = sessao.query(Reserva).filter(Reserva.data_reserva.like(f"%{reserva}%")).all()
+    
+    reservas_dados= (
+        sessao.query(Perfil, Reserva)
+        .join(Perfil, Reserva.id)
+    )
     
     #chamar reserva.html para mostrar os dados
     return render_template("reserva.html", reservas=reservas)
