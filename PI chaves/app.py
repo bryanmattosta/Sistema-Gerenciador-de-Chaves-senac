@@ -138,8 +138,7 @@ def usuario():
         return redirect(url_for("usuario"))
     return render_template('usuario.html', perfils=todo_perfil)
 
-#
-                                            #verificar se esta tudo ok
+
 #consultar usuário falta ver
 @app.route("/usuario/consultar", methods=["GET", "POST"])
 def consultar_usuario():
@@ -407,32 +406,6 @@ def movimentacao():
     
     return render_template('movimentacao.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
 
-#consultar movimentacao
-@app.route("/movimentacao/consultar", methods=["GET"])
-def consultar_movimentacao():
-    
-    #pegar a movimentacao que foi informada no formulário
-    data_movimentacao = request.args.get("data_movimentacao","")
-    
-    #pegar dados de outras tabelas
-    movimentacao_dados = (
-        sessao.query(Movimentacao, Perfil, Chave, Ambiente, Reserva)
-        .outerjoin(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
-        .outerjoin(Chave, Movimentacao.id_chave == Chave.id_chave)
-        .outerjoin(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambiente)
-        .outerjoin(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
-        .filter(Movimentacao.data_movimentacao == data_movimentacao)
-        .all()
-        )
-    
-    
-    
-    #consultar o(s) movimentacao(s)
-    # movimentacoes = sessao.query(Movimentacao).filter(Movimentacao.data_movimentacaoa.like(f"%{data_movimentacao}%")).all()
-    
-    #chamar movimentacao.html para mostrar os dados
-    return render_template("movimentacao.html", movimentacoes=movimentacao_dados)
-
 
 #alterar movimentacao
 @app.route("/movimentacao/alterar/<int:id_movimentacao>", methods=["GET", "POST"])
@@ -511,19 +484,6 @@ def devolucao():
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("devolucao"))
     return render_template('devolucao.html', perfils=perfils, reservas=reservas)
-
-#consultar devolucao
-@app.route("/devolucao/consultar", methods=["GET", "POST"])
-def consultar_devolucao():
-    
-    #pegar a devolucao que foi informada no formulário
-    date_reserva = request.args.get("date_reserva","")
-    
-    #consultar a(s) devolucao(oes)
-    devolucoes = sessao.query(devolucao).filter(devolucao.date_reserva.like(f"%{date_reserva}%")).all()
-    
-    #chamar devolucao.html para mostrar os dados
-    return render_template("devolucao.html", devolucoes=devolucoes)
 
 
 #alterar devolucao
