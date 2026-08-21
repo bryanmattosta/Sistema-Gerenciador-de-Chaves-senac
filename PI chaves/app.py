@@ -49,7 +49,6 @@ def chave():
         return redirect(url_for("chave"))
     return render_template('chave.html', ambientes=todos_ambiente)
 
-
 #alterar chave #falta ver
 @app.route("/chave/alterar/<int:id_chave>", methods=["GET", "POST"])
 def alterar_chave(id_chave):
@@ -108,7 +107,6 @@ def consultar_chave():
     #chamar cahve.html para mostrar dados
     return render_template('chave.html', chaves=chaves)
 
-
 #usuario
 @app.route("/usuario", methods=["GET", "POST"])
 def usuario():
@@ -138,8 +136,7 @@ def usuario():
         return redirect(url_for("usuario"))
     return render_template('usuario.html', perfils=todo_perfil)
 
-#
-                                            #verificar se esta tudo ok
+
 #consultar usuário falta ver
 @app.route("/usuario/consultar", methods=["GET", "POST"])
 def consultar_usuario():
@@ -324,7 +321,6 @@ def consultar_perfil():
     #chamar perfil.html para mostrar os dados
     return render_template("perfil.html", perfis=perfis)
 
-
 #alterar perfil falta ver
 @app.route("/perfil/alterar/<int:id_perfil>", methods=["GET", "POST"])
 def alterar_perfil(id_perfil):
@@ -407,172 +403,41 @@ def movimentacao():
     
     return render_template('movimentacao.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
 
-#consultar movimentacao
-@app.route("/movimentacao/consultar", methods=["GET"])
-def consultar_movimentacao():
-    
-    #pegar a movimentacao que foi informada no formulário
-    data_movimentacao = request.args.get("data_movimentacao","")
-    
-    #pegar dados de outras tabelas
-    movimentacao_dados = (
-        sessao.query(Movimentacao, Perfil, Chave, Ambiente, Reserva)
-        .outerjoin(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
-        .outerjoin(Chave, Movimentacao.id_chave == Chave.id_chave)
-        .outerjoin(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambiente)
-        .outerjoin(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
-        .filter(Movimentacao.data_movimentacao == data_movimentacao)
-        .all()
-        )
-    
-    
-    
-    #consultar o(s) movimentacao(s)
-    # movimentacoes = sessao.query(Movimentacao).filter(Movimentacao.data_movimentacaoa.like(f"%{data_movimentacao}%")).all()
-    
-    #chamar movimentacao.html para mostrar os dados
-    return render_template("movimentacao.html", movimentacoes=movimentacao_dados)
-
-
-#alterar movimentacao
-@app.route("/movimentacao/alterar/<int:id_movimentacao>", methods=["GET", "POST"])
-def alterar_movimentacao(id_movimentacao):
-    
-    #buscar os dados o id_movimentacao
-    movimentacao = sessao.query(Movimentacao).get(id_movimentacao)
-    
-    #valida se existe a movimentacao com a id_movimentacao informada
-    if movimentacao is None:
-        flash("Movimentação não encontrada","danger")
-        return redirect(url_for("movimentacao"))
-    
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        movimentacao.data_retirada = request.form.get("data_retirada")
-        movimentacao.horario_inicio = request.form.get("horario_inicio")
-        
-        #validade movimentacao
-        if movimentacao.data_retirada == "":
-            flash("Data de retirada é obrigatória!","danger")
-            return render_template("alterar.movimentacao.html", movimentacao=movimentacao)
-        
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("movimentacao"))
-    
-    return render_template("alterar.movimentacao.html", movimentacao=movimentacao)
-
-#movimentacao excluir
-@app.route("/movimentacao/excluir/<int:id_movimentacao>", methods=["POST"])
-def excluir_movimentacao(id_movimentacao):
-    #buscar os dados o id_movimentacao
-    movimentacao = sessao.query(Movimentacao).get(id_movimentacao)
-
-    #realizar a exclusao da movimentacao
-    if movimentacao:
-        sessao.delete(movimentacao)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
-    else:
-        flash("Movimentação não encontrada!","danger")
-
-    #retornar a tela principal da movimentacao
-    return redirect(url_for("movimentacao"))
-
 #devolucao
 @app.route("/devolucao", methods=["GET", "POST"])
 def devolucao():
     
-    #pegar dados para for
-    perfils = sessao.query(Perfil).all()
-    reservas = sessao.query(Reserva).all()
-    
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_devolucao = request.form.get("data_devolucao")
-        hora_inicio_devolucao = request.form.get("hora_inicio_devolucao")
-        hora_fim_devolucao = request.form.get("hora_fim_devolucao")
-        id_perfil = request.form.get("perfil")
-        id_reserva = request.form.get("reserva")
-        observacao_devoluca = request.form.get("observacao_devolucao")
+        devolucao = request.form.get("id_devolucao")
+
         
         # Validação da data de reserva
-        if data_devolucao == "":
+        if devolucao == "":
             flash("Data de reserva é obrigatória!", "danger")
             return render_template("devolucao.html")
 
-        #inserir devolucao
-        d = Devolucao(data_devolucao=data_devolucao, hora_fim_devolucao=hora_fim_devolucao, hora_inicio_devolucao=hora_inicio_devolucao, observacao_devoluca=observacao_devoluca, id_perfil=id_perfil, id_reserva=id_reserva)
-        sessao.add(d)
-        sessao.commit()
+        devolucao_dados = (
+            sessao.query(Devolucao,Reserva,Movimentacao,Ambiente,Chave,Perfil)
+            .outerjoin(Perfil, Devolucao.id_perfil == Perfil.id_perfil)
+            .outerjoin(Chave, Devolucao.id_chave == Chave.id_chave)
+            .outerjoin(Reserva, Devolucao.id_reserva == Reserva.id_reserva)
+            .outerjoin(Ambiente, Devolucao.id_ambiente == Ambiente.id_ambiente)
+            .outerjoin(Perfil, Devolucao.matricula == Perfil.matricula)
+            .outerjoin(Perfil, Devolucao.cargo == Perfil.cargo)
+            .outerjoin(Chave, Devolucao.identificador == Chave.identificador)
+            .outerjoin(Reserva, Devolucao.data_reserva == Reserva.data_reserva)
+            .outerjoin(Reserva, Devolucao.hora_inicio_reserva == Reserva.hora_inicio_reserva)
+            .outerjoin(Reserva, Devolucao.hora_fim_reserva == Reserva.hora_fim_reserva)
+            .filter(Reserva.id_reserva.like(f"%{devolucao}%")).all()
+            )
+        
         flash("Devolução salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("devolucao"))
-    return render_template('devolucao.html', perfils=perfils, reservas=reservas)
-
-#consultar devolucao
-@app.route("/devolucao/consultar", methods=["GET", "POST"])
-def consultar_devolucao():
     
-    #pegar a devolucao que foi informada no formulário
-    date_reserva = request.args.get("date_reserva","")
-    
-    #consultar a(s) devolucao(oes)
-    devolucoes = sessao.query(devolucao).filter(devolucao.date_reserva.like(f"%{date_reserva}%")).all()
-    
-    #chamar devolucao.html para mostrar os dados
-    return render_template("devolucao.html", devolucoes=devolucoes)
-
-
-#alterar devolucao
-@app.route("/devolucao/alterar/<int:id_devolucao>", methods=["GET", "POST"])
-def alterar_devolucao(id_devolucao):
-    
-    #buscar os dados o id_devolucao
-    devolucao = sessao.query(devolucao).get(id_devolucao)
-    
-    #valida se existe a devolucao com a id_devolucao informada
-    if devolucao is None:
-        flash("Devolução não encontrada","danger")
-        return redirect(url_for("devolucao"))
-    
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        devolucao.date_reserva = request.form.get("date_reserva")
-        devolucao.horario_devolucao = request.form.get("horario_devolucao")
-        devolucao.obsevacao_devolucao = request.form.get("obsevacao_devolucao")
-
-        #validade devolucao
-        if devolucao.date_reserva == "":
-            flash("Data de reserva é obrigatória!","danger")
-            return render_template("alterar.devolucao.html", devolucao=devolucao)
-
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("devolucao"))
-    
-    return render_template("alterar.devolucao.html", devolucao=devolucao)
-
-#devolucao excluir
-@app.route("/devolucao/excluir/<int:id_devolucao>", methods=["POST"])
-def excluir_devolucao(id_devolucao):
-    #buscar os dados o id_devolucao
-    devolucao = sessao.query(devolucao).get(id_devolucao)
-
-    #realizar a exclusao da devolucao
-    if devolucao:
-        sessao.delete(devolucao)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
-    else:
-        flash("Devolução não encontrada!","danger")
-
-    #retornar a tela principal da devolucao
-    return redirect(url_for("devolucao"))
-
+    return render_template('devolucao.html', devolucoes = devolucao_dados)
 
 #reserva
 @app.route("/reserva", methods=["GET", "POST"])
@@ -618,15 +483,16 @@ def consultar_reserva():
     reserva = request.args.get("reserva","")
     
     #consultar a(s) reserva(s)
-    reservas = sessao.query(Reserva).filter(Reserva.data_reserva.like(f"%{reserva}%")).all()
+    # reservas = sessao.query(Reserva).filter(Reserva.data_reserva.like(f"%{reserva}%")).all()
     
     reservas_dados= (
         sessao.query(Perfil, Reserva)
-        .join(Perfil, Reserva.id)
+        .outerjoinjoin(Perfil, Reserva.id_perfil == Perfil.id_perfil)
+        .filter(Reserva.data_reserva.like(f"%{reserva}%")).all()
     )
     
     #chamar reserva.html para mostrar os dados
-    return render_template("reserva.html", reservas=reservas)
+    return render_template("reserva.html", reservas=reservas_dados)
 
 
 #alterar reserva

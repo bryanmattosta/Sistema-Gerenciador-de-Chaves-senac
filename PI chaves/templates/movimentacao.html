@@ -73,42 +73,4 @@
         </form>
       </div>
     </div>
-
-
-<br>
-<!-- card pesquisa -->
- <div class="card mb-3" id="card_chave">
-    <h3 style="text-align: center;">Pesquisa Movimentação</h1>
-    <hr>
-    <div class="col-12">
-    <div class="d-flex justify-content-center">
-      <form class="d-flex" method="GET" action="{{ url_for('consultar_movimentacao') }}">
-        <input type="date"class="form-control"id="formGroupExampleInput"placeholder="Pesquise o Movimentação" name="data_movimentacao">
-        <button class="btn btn-primary" type="submit">Buscar</button>
-      </form>
-    </div>
-    </div>
-    <hr>
-<div class="d-flex gap-3">
-{% for movimentacao, perfil, chave, ambiente, reserva in movimentacoes %}
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-  <div class="card-body">
-      <p class="card-text">Foto do usuario</p>
-    <h5 class="card-title">{{ perfil.nome_perfil }}</h5>
-    <h3 class="card-title">ID: {{ reserva.id_reserva }} Ambiente: {{ ambiente.ambiente }} Chave: {{ chave.identificador }}</h3>
-  </div>
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item"> {{ movimentacao.data_movimentacao }}</li>
-    <li class="list-group-item">{{ movimentacao.hora_inicio_movimentacao }}</li>
-    <li class="list-group-item">{{ movimentacao.hora_fim_movimentacao }}</li>
-  </ul>
-  <div class="card-body">
-    <button type="button" class="btn btn-outline-warning">Editar</button>
-    <button type="button" class="btn btn-outline-danger">Deletar</button>
-  </div>
-</div>
-{% endfor %}
- 
-</div>
 {% endblock %}
