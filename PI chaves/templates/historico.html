@@ -16,43 +16,44 @@
                     <option value="{{ perfil.id_perfil }}">{{ perfil.nome_perfil }}</option>
                     {% endfor %}
                 </select>
-               <div class="row g-3" method="GET" action="{{ url_for('historico') }}" role="search">
-                <div class="mb-3">
-                  <label for="busca-chave" class="visually-hidden">Buscar historico de chave</label>
-                  <input type="search" class="form-control" id="busca-chave" name="chave" placeholder="Buscar chave…">
-                </div>
-                <button type="submit" class="btn btn-contorno">Buscar</button>
-              </div>
+            </div>
+          </form>
+        </div>
+    </div>
+
     
-    <!-- table que mostra todo o historico -->
-    <div class="table-responsive">
-        <table class="table tabela-historico align-middle mb-0">
-          <thead>
-            <tr>
-              <th>Chave</th>
-              <th>Identificação</th>
-              <th>Ambiente/Sala</th>
-              <th>Data</th>
-              <th>Horario Inicio</th>
-              <th>Horario Fim</th>
-              <th>Numero de Reserva</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for ambiente, perfil, chave, movimentacao in dados_historico %}
-            <tr>
-              <td>{{ chave.nome_chave }}</td>
-              <td>{{ chave.identificacao }}</td>
-              <td>{{ chave.ambiente }}</td>
-              <td>{{ movimentacao.data|data_br }}</td>
-              <td>{{ movimentacao.horario_inicio }}</td>
-              <td>{{ movimentacao.horario_fim }}</td>
-              <td>{{ movimentacao.id_reserva }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-  </div>
+    <div class="card">
+      <h3 style="text-align: center;">Pesquisa Historico</h1>
+            <form method="GET" action="{{ url_for('historico') }}">
+               <div class="col-md-6" role="search">
+                <div class="mb-3">
+                  <label for="busca-historico" class="visually-hidden">Buscar historico</label>
+                  <input type="date" class="form-control" id="busca-historico" name="data_movimentacao" placeholder="Buscar historico de chave…">
+                </div>
+                <button class="btn btn-primary" type="submit">Buscar</button>
+              </div>
+                <div class="d-flex gap-3">
+                {% for ambiente, perfil, chave, devolucao, movimentacao, reserva in dados_historico %}
+                <div class="card" style="width: 18rem;">
+                  <img src="..." class="card-img-top" alt="...">
+                  <div class="card-body">
+                      <p class="card-text">Foto do usuario</p>
+                    <h5 class="card-title">{{ perfil.nome_perfil }}</h5>
+                    <h3 class="card-title">ID: {{ reserva.id_reserva }} Ambiente: {{ ambiente.ambiente }} Chave: {{ chave.identificador }}</h3>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">{{ chave.nome_chave }}</li>
+                    <li class="list-group-item">{{ chave.identificacao }}</li>
+                    <li class="list-group-item">{{ chave.ambiente }}</li>
+                    <li class="list-group-item">{{ movimentacao.data_movimentacao }}</li>
+                    <li class="list-group-item">{{ movimentacao.horario_inicio_movimentacao }}</li>
+                    <li class="list-group-item">{{ movimentacao.horario_fim_movimentacao }}</li>
+                    <li class="list-group-item">{{ movimentacao.id_reserva }}</li>
+                  </ul>
+                  <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                  </div>
+                </div>
 
 {% endblock %}

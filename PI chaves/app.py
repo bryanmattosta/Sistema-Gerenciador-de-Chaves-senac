@@ -679,7 +679,18 @@ def excluir_reserva(id_reserva):
 #historico
 @app.route("/historico", methods=["GET"])
 def historico():
-    return render_template('historico.html')
+    
+    dados_historico = (
+        sessao.query(Movimentacao, Perfil, Chave, Ambiente, Reserva, Devolucao)
+        .outerjoin(Perfil, Movimentacao.id_perfil == Perfil.id_perfil)
+        .outerjoin(Chave, Movimentacao.id_chave == Chave.id_chave)
+        .outerjoin(Ambiente, Movimentacao.id_ambiente == Ambiente.id_ambiente)
+        .outerjoin(Reserva, Movimentacao.id_reserva == Reserva.id_reserva)
+        .outerjoin(Devolucao, Movimentacao.id_movimentacao == Devolucao.id_devolucao)
+        .all()
+    )
+
+    return render_template('historico.html', dados_historico=dados_historico)
 
 
 app.run(debug=True)
