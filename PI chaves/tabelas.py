@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
-from sqlalchemy import create_engine, Column, Integer, String, Numeric, Date, Boolean, Time
+from sqlalchemy import create_engine, Column, Integer, String, Numeric, Date, Boolean, Time, DateTime
 from sqlalchemy.orm import declarative_base, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,13 +12,12 @@ engine = create_engine(
 #Criando tabela banco de dados chave
 Base=declarative_base()
 class Chave(Base):
-    __tablename__ = "tb_chave"
-    id_chave      = Column(Integer, primary_key=True)
-    identificador = Column(String(250))
-    id_ambiente   = Column(Integer)
-    observacao    = Column(String(250))
-    disponivel    = Column(String(45))
-    nome_chave     = Column(String(250))
+    __tablename__    = "tb_chave"
+    id_chave         = Column(Integer, primary_key=True)
+    id_ambiente      = Column(Integer)
+    observacao_chave = Column(String(250))
+    status           = Column(Boolean)
+    nome_chave       = Column(String(150))
 Base.metadata.create_all(engine)
 
 
@@ -26,9 +25,8 @@ Base.metadata.create_all(engine)
 class Usuario(Base):
     __tablename__ = "tb_usuario"
     id_usuario    = Column(Integer, primary_key=True)
-    nome_usuario  = Column(String(250))
     email         = Column(String(250))
-    senha         = Column(Numeric(15,0))
+    senha_usuario = Column(String(250))
     id_perfil     = Column(Integer)
 Base.metadata.create_all(engine)
 
@@ -36,18 +34,21 @@ Base.metadata.create_all(engine)
 class Perfil(Base):
     __tablename__ = "tb_perfil"
     id_perfil     = Column(Integer, primary_key=True)
-    nome_perfil   = Column(String(200), nullable=True)
-    matricula     = Column(Numeric(12,0), nullable=True)
-    cargo         = Column(String(250), nullable=True)
+    nome_perfil   = Column(String(250))
+    matricula     = Column(String(250))
+    cargo         = Column(String(200))
+    status_perfil = Column(Boolean)
 Base.metadata.create_all(engine)
 
 #Criando tabela banco de dados ambiente
 class Ambiente(Base):
     __tablename__       = "tb_ambiente"
     id_ambiente         = Column(Integer, primary_key=True)
-    ambiente            = Column(String(150))
-    disponivel_ambiente = Column(String(45))
+    nome_sala           = Column(String(150))
+    status_ambiente     = Column(Boolean)
     observacao_ambiente = Column(String(250))
+    tipo                = Column(String(150))
+    localizacao         = Column(String(250))
 Base.metadata.create_all(engine)
 
 
@@ -57,36 +58,12 @@ class Movimentacao(Base):
     id_movimentacao    = Column(Integer, primary_key=True)
     id_chave           = Column(Integer)
     id_perfil          = Column(Integer)
-    id_ambiente        = Column(Integer)
-    data_movimentacao  = Column(Date)
-    id_reserva         = Column(Integer)
-    hora_inicio_movimentacao = Column(Time)
-    hora_fim_movimentacao = Column(Time)
+    codigo_reserva     = Column(String(250))
+    date_hora_reserva  = Column(DateTime)
+    date_hora_retirada = Column(DateTime)
+    date_hora_devolucao = Column(DateTime)
+    date_hora_devolucao_prev =Column(DateTime)
+    status             =Column(String(50))
 Base.metadata.create_all(engine)
 
-
-#Criando tabela banco de dados reserva
-class Reserva(Base):
-    __tablename__       = "tb_reserva"
-    id_reserva          = Column(Integer, primary_key=True)
-    id_chave            = Column(Integer)
-    id_ambiente         = Column(Integer)
-    id_perfil           = Column(Integer)
-    data_reserva        = Column(Date)
-    hora_inicio_reserva = Column(Time)
-    hora_fim_reserva    = Column(Time)
-Base.metadata.create_all(engine)
-
-
-#Criando tabela banco de dados movimentacao_devolucao
-class Devolucao(Base):
-    __tablename__       = "tb_devolucao"
-    id_devolucao        = Column(Integer, primary_key=True)
-    id_reserva          = Column(Integer)
-    id_perfil            = Column(Integer)
-    data_devolucao       = Column(Date)
-    hora_fim_devolucao   = Column(Time)
-    hora_inicio_devolucao   = Column(Time)
-    observacao_devoluca = Column(String(250))
-Base.metadata.create_all(engine)
 

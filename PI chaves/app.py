@@ -2,7 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import create_engine, Column, Integer, String, Numeric, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from tabelas import engine, Base, Chave, Usuario, Perfil, Ambiente, Movimentacao, Reserva, Devolucao
+from tabelas import engine, Base, Chave, Usuario, Perfil, Ambiente, Movimentacao
+from random import randint
+from datetime import datetime
+
 
 
 #cria a sesao
@@ -18,184 +21,220 @@ app.secret_key="123456"
 def home():
     return render_template('index.html')
 
-
-#chave #feito e #verificado
+#chave 
 @app.route("/chave", methods=["GET", "POST"])
 def chave():
-
-    #lista de todas chaves
+    # Lista de todos os ambientes para preencher o <select>
     todos_ambiente = sessao.query(Ambiente).all()
 
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        identificador = request.form.get("identificador")
-        observacao = request.form.get("observacao")
-        disponivel = request.form.get("disponivel")
+        # Pegando os dados EXATOS que vêm do HTML e que existem no banco
         nome_chave = request.form.get("nome_chave")
-        id_ambiente = request.form.get("ambiente")
+        id_ambiente = request.form.get("id_ambiente")
+        observacao_chave = request.form.get("observacao_chave")
         
         # Validação do nome
-        if nome_chave == "":
+        if not nome_chave or nome_chave.strip() == "":
             flash("Nome da Chave é obrigatório!", "danger")
-            return render_template("chave.html")
+            # Tem que passar os ambientes aqui também, senão a tela quebra!
+            return render_template("chave.html", ambientes=todos_ambiente)
 
-        #inserir chave
-        c = Chave(identificador=identificador, observacao=observacao, disponivel=disponivel, nome_chave=nome_chave, id_ambiente=id_ambiente)
+        # Inserir chave (já definindo status=1 para nascer Ativa)
+        c = Chave(
+            nome_chave=nome_chave, 
+            id_ambiente=id_ambiente, 
+            observacao_chave=observacao_chave, 
+            status=1
+        )
+        
         sessao.add(c)
         sessao.commit()
         flash("Chave salva com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("chave"))
+        
     return render_template('chave.html', ambientes=todos_ambiente)
 
-
-#alterar chave #falta ver
-@app.route("/chave/alterar/<int:id_chave>", methods=["GET", "POST"])
-def alterar_chave(id_chave):
-    
-    #buscar os dados o id_chave
-    chave = sessao.query(Chave).get(id_chave)
-    
-    #valida se existe a chave com a id_chave informada
-    if chave is None:
-        flash("Chave não encontrada","danger")
-        return redirect(url_for("chave"))
-    
-    #pegar os dados e atualizar a chave
-    if request.method == "POST":
-        chave.nome_chave = request.form.get("nome_chave")
-        chave.observacao = request.form.get("observacao")
-        chave.disponivel = request.form.get("disponivel")
-        chave.identificador = request.form.get("identificador")
-        
-        #validade chave
-        if chave.nome_chave == "":
-            flash("Nome da Chave é obrigatório!","danger")
-            return render_template("alterar.chave.html", chave=chave)
-        
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("chave"))
-    
-    return render_template("alterar.chave.html", chave=chave)
-
-#chave excluir #falta ver
-@app.route("/chave/excluir/<int:id_chave>", methods=["POST"])
-def excluir_chave(id_chave):
-    #buscar os dados o id_chave
-    chave = sessao.query(Chave).get(id_chave)
-    
-    #realizar a exclusao do cliente
-    if chave:
-        sessao.delete(chave)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
-    else:
-        flash("Chave não encontrada!","danger")
-    
-    #retornar a tela principal do cliente
-    return redirect(url_for("chave"))
-
-#chave consultar #feito e #verificado
+#chave consultar
 @app.route("/chave/consultar", methods=["GET", "POST"])
 def consultar_chave():
     #Pegar a chave foi informada
     chave_nome = request.args.get("nome_chave","")
+    todos_ambientes = sessao.query(Ambiente).all()
     #consultar chave
     chaves = sessao.query(Chave).filter(Chave.nome_chave.like(f"%{chave_nome}%")).all()
     #chamar cahve.html para mostrar dados
-    return render_template('chave.html', chaves=chaves)
+    return render_template('chave.html', chaves=chaves, ambientes=todos_ambientes)
 
+#alterar
+@app.route("/chave/alterar", methods=["POST"])
+def alterar_chave():
+    
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_chave = request.form.get("id_chave")
+    
+    # 2. Busca a chave no banco
+    chave = sessao.query(Chave).get(id_chave)
+    
+    # 3. Valida se a chave existe
+    if chave is None:
+        flash("Chave não encontrada.", "danger")
+        return redirect(url_for("chave"))
+        
+    # 4. Pega os dados EXATOS usando os nomes da sua tabela MySQL
+    nome_chave = request.form.get("nome_chave")
+    id_ambiente = request.form.get("id_ambiente")
+    observacao_chave = request.form.get("observacao_chave")
+    status = request.form.get("status")
+    
+    # 5. Validação de segurança simples
+    if not nome_chave or nome_chave.strip() == "":
+        flash("Nome da Chave é obrigatório!", "danger")
+        return redirect(url_for("chave"))
+        
+    # 6. Atualiza o objeto com os dados novos (Fiel ao banco de dados)
+    chave.nome_chave = nome_chave
+    chave.id_ambiente = id_ambiente
+    chave.observacao_chave = observacao_chave
+    chave.status = int(status) # <-- A mágica da conversão pra inteiro aqui!
+    
+    # 7. Salva as alterações
+    sessao.commit()
+    flash("Chave alterada com sucesso!", "success") # Corrigido o typo 'sucess'
+        
+    # Volta para a tela principal de chaves
+    return redirect(url_for("chave"))
 
-#usuario inserir feito
+#chave 
+@app.route("/chave/excluir", methods=["POST"])
+def excluir_chave():
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_chave = request.form.get("id_chave")
+    
+    # 2. Busca a chave no banco
+    chave = sessao.query(Chave).get(id_chave)
+    
+    # 3. Realiza a exclusao da chave
+    if chave:
+        sessao.delete(chave)
+        sessao.commit()
+        flash("Excluído com sucesso!", "success") # Corrigido para 'success' com dois 'c' e dois 's'
+    else:
+        flash("Chave não encontrada!", "danger")
+    
+    # 4. Retorna a tela principal de chaves
+    return redirect(url_for("chave"))
+
+#usuario
 @app.route("/usuario", methods=["GET", "POST"])
 def usuario():
-    
-    #pegar os perfils
-    todo_perfil = sessao.query(Perfil).all()
+    # 1. Pega os perfis para preencher o <select> do formulário
+    todos_perfis = sessao.query(Perfil).all()
     
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        nome_usuario = request.form.get("nome_usuario")
-        senha = request.form.get("senha_usuario")
-        email = request.form.get("email_usuario")
-        id_perfil    = request.form.get("perfil")
+        # 2. Pegando os dados EXATOS do HTML e do Banco
+        email = request.form.get("email")
+        senha_usuario = request.form.get("senha_usuario")
+        id_perfil = request.form.get("id_perfil")
         
-        # Validação do nome
-        if nome_usuario == "":
-            flash("Nome do Usuário é obrigatório!", "danger")
-            return render_template("usuario.html")
+        # 3. Validação (usando o E-mail, já que não temos o nome)
+        if not email or email.strip() == "":
+            flash("O E-mail é obrigatório!", "danger")
+            # Envia os perfis e dados vazios para a tela não quebrar
+            return render_template("usuario.html", perfis=todos_perfis, dados=[])
 
-        #inserir usuário
-        p = Usuario(nome_usuario=nome_usuario, email=email, senha=senha, id_perfil=id_perfil)
-        sessao.add(p)
+        # 4. Inserir usuário no banco
+        novo_usuario = Usuario(
+            email=email, 
+            senha_usuario=senha_usuario, 
+            id_perfil=id_perfil
+        )
+        
+        sessao.add(novo_usuario)
         sessao.commit()
         flash("Usuário salvo com sucesso!", "success")
 
-        # Redireciona para a página inicial após o envio do formulário
+        # Redireciona para a página inicial após o envio
         return redirect(url_for("usuario"))
-    return render_template('usuario.html', perfils=todo_perfil)
+   
+    # 5. Ao abrir a tela, manda os perfis para o <select> e a lista vazia para a consulta
+    return render_template('usuario.html', perfis=todos_perfis, dados=[])
 
-#consultar usuário falta ver
-@app.route("/usuario/consultar", methods=["GET", "POST"])
+#consultar usuário
+@app.route("/usuario/consultar", methods=["GET"])
 def consultar_usuario():
     
-    #pegar o usuário que foi informado no formulário
-    nome_usuario = request.args.get("usuario","")
+    # 1. Pega o e-mail que foi digitado na barra de pesquisa
+    email_busca = request.args.get("email", "")
     
-    #importar outra tabela para pegar o nome do perfil
-    usuarios_perfis = sessao.query(Usuario, Perfil).join(Perfil, Usuario.id_perfil == Perfil.id_perfil).filter(Usuario.nome_usuario.like(f"%{nome_usuario}%")).all()
+    # 2. Faz o JOIN entre Usuário e Perfil, mas filtrando pelo E-MAIL
+    usuarios_perfis = sessao.query(Usuario, Perfil).join(
+        Perfil, Usuario.id_perfil == Perfil.id_perfil
+    ).filter(
+        Usuario.email.like(f"%{email_busca}%")
+    ).all()
     
-    #chamar usuario.html para mostrar os dados
-    return render_template("usuario.html", dados=usuarios_perfis)
+    # 3. Busca todos os perfis (Isso é obrigatório para o <select> da Modal de Editar não quebrar!)
+    todos_perfis = sessao.query(Perfil).all()
+    
+    # 4. Chama a tela enviando os resultados da busca (dados) e os perfis
+    return render_template("usuario.html", dados=usuarios_perfis, perfis=todos_perfis)
 
-#alterar usuario falta ver
-@app.route("/usuario/alterar/<int:id_usuario>", methods=["GET", "POST"])
-def alterar_usuario(id_usuario):
+#alterar usuario
+@app.route("/usuario/alterar", methods=["POST"])
+def alterar_usuario():
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_usuario = request.form.get("id_usuario")
     
-    #buscar os dados o id_usuario
+    # 2. Busca os dados do usuário no banco
     usuario = sessao.query(Usuario).get(id_usuario)
     
-    #valida se existe o usuário com a id_usuario informada
+    # 3. Valida se o usuário existe
     if usuario is None:
-        flash("Usuário não encontrado","danger")
+        flash("Usuário não encontrado", "danger")
         return redirect(url_for("usuario"))
     
-    #pegar os dados e atualizar o usuário
-    if request.method == "POST":
-        usuario.nome_usuario = request.form.get("nome_usuario")
-        usuario.email = request.form.get("email")
-        usuario.senha = request.form.get("senha")
-        
-        #validade usuário
-        if usuario.nome_usuario == "":
-            flash("Nome do Usuário é obrigatório!","danger")
-            return render_template("alterar.usuario.html", usuario=usuario)
-        
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("usuario"))
+    # 4. Pega os dados exatos do HTML/Banco
+    email = request.form.get("email")
+    senha_usuario = request.form.get("senha_usuario")
+    id_perfil = request.form.get("id_perfil")
     
-    return render_template("alterar.usuario.html", usuario=usuario)
+    # 5. Validação de segurança (usando email)
+    if not email or email.strip() == "":
+        flash("O E-mail é obrigatório!", "danger")
+        return redirect(url_for("usuario"))
+        
+    # 6. Atualiza o objeto com os dados novos
+    usuario.email = email
+    usuario.senha_usuario = senha_usuario
+    usuario.id_perfil = int(id_perfil) # Convertendo o ID do perfil para número inteiro!
+    
+    # 7. Salva as alterações
+    sessao.commit()
+    flash("Usuário alterado com sucesso!", "success") 
+    
+    # Retorna para a tela principal
+    return redirect(url_for("usuario"))
 
 #usuario excluir falta ver
-@app.route("/usuario/excluir/<int:id_usuario>", methods=["POST"])
-def excluir_usuario(id_usuario):
-    #buscar os dados o id_usuario
+@app.route("/usuario/excluir", methods=["POST"])
+def excluir_usuario():
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_usuario = request.form.get("id_usuario")
+    
+    # 2. Busca os dados do usuário
     usuario = sessao.query(Usuario).get(id_usuario)
 
-    #realizar a exclusao do usuario
+    # 3. Realiza a exclusão do usuário
     if usuario:
         sessao.delete(usuario)
         sessao.commit()
-        flash("Excluído com sucesso!","sucess")
+        flash("Excluído com sucesso!", "success") # Corrigido para 'success'
     else:
-        flash("Usuário não encontrado!","danger")
+        flash("Usuário não encontrado!", "danger")
 
-    #retornar a tela principal do usuario
+    # 4. Retorna a tela principal do usuário
     return redirect(url_for("usuario"))
 
 #ambiente 
@@ -203,467 +242,365 @@ def excluir_usuario(id_usuario):
 def ambiente():
     if request.method == "POST":
         # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        ambiente = request.form.get("nome_ambiente")
+        ambiente = request.form.get("nome_sala")
         observacao_ambiente = request.form.get("observacao_ambiente")
-        disponivel_ambiente = request.form.get("disponivel_ambiente")
+        tipo= request.form.get("tipo")
+        localizacao=request.form.get("localizacao")
+        
         
         # Validação do nome
         if ambiente == "":
-            flash("Nome do Ambiente é obrigatório!", "danger")
+            flash("Nome da Sala é obrigatório!", "danger")
             return render_template("ambiente.html")
 
         #inserir ambiente
-        a = Ambiente(ambiente=ambiente, observacao_ambiente=observacao_ambiente, disponivel_ambiente=disponivel_ambiente)
+        a = Ambiente(nome_sala=ambiente, observacao_ambiente=observacao_ambiente, tipo=tipo, localizacao=localizacao)
         sessao.add(a)
         sessao.commit()
-        flash("Ambiente salvo com sucesso!", "success")
+        flash("Sala salvo com sucesso!", "success")
 
         # Redireciona para a página inicial após o envio do formulário
         return redirect(url_for("ambiente"))
     
     return render_template('ambiente.html')
 
-
-#alterar ambiente falta ver
-@app.route("/ambiente/alterar/<int:id_ambiente>", methods=["GET", "POST"])
-def alterar_ambiente(id_ambiente):
-    
-    #buscar os dados o id_ambiente
-    ambiente = sessao.query(Ambiente).get(id_ambiente)
-    
-    #valida se existe o ambiente com a id_ambiente informada
-    if ambiente is None:
-        flash("Ambiente não encontrado","danger")
-        return redirect(url_for("ambiente"))
-    
-    #pegar os dados e atualizar o ambiente
-    if request.method == "POST":
-        ambiente.ambiente = request.form.get("ambiente")
-        ambiente.observacao_ambiente = request.form.get("observacao_ambiente")
-        ambiente.disponivel_ambiente = request.form.get("disponivel_ambiente")
-        
-        #validade usuário
-        if ambiente.ambiente == "":
-            flash("Nome do Ambiente é obrigatório!","danger")
-            return render_template("alterar.ambiente.html", ambiente=ambiente)
-        
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("ambiente"))
-    
-    return render_template("alterar.ambiente.html", ambiente=ambiente)
-
-#ambiente excluir falta ver
-@app.route("/ambiente/excluir/<int:id_ambiente>", methods=["POST"])
-def excluir_ambiente(id_ambiente):
-    #buscar os dados o id_ambiente
-    ambiente = sessao.query(Ambiente).get(id_ambiente)
-
-    #realizar a exclusao do ambiente
-    if ambiente:
-        sessao.delete(ambiente)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
-    else:
-        flash("Ambiente não encontrado!","danger")
-
-    #retornar a tela principal do ambiente
-    return redirect(url_for("ambiente"))
-
-#ambiente consultar #feito e #verificado
+#ambiente consultar
 @app.route("/ambiente/consultar",methods=["GET", "POST"])
 def consultar_ambiente():
     #Pegar o ambiente informado
     ambiente_nome = request.args.get("ambiente","")
     
     #consultar chave
-    ambientes = sessao.query(Ambiente).filter(Ambiente.ambiente.like(f"%{ambiente_nome}%"))
+    ambientes = sessao.query(Ambiente).filter(Ambiente.nome_sala.like(f"%{ambiente_nome}%"))
     
     #chamar p ambiente.html para mostrar dados
     return render_template('ambiente.html', ambientes=ambientes)
 
-#perfil #feito
+#alterar ambiente
+@app.route("/ambiente/alterar", methods=["POST"])
+def alterar_ambiente():
+    # 1. Pega o ID que veio escondido naquele campo <input type="hidden"> da modal
+    id_ambiente = request.form.get("id_ambiente")
+    
+    # 2. Busca o ambiente no banco
+    ambiente = sessao.query(Ambiente).get(id_ambiente)
+    
+    # 3. Valida se o ambiente existe
+    if ambiente is None:
+        flash("Ambiente não encontrado.", "danger")
+        return redirect(url_for("ambiente"))
+        
+    # 4. Pega os dados exatos usando os atributos 'name' do HTML
+    nome_sala = request.form.get("nome_sala")
+    tipo = request.form.get("tipo")
+    localizacao = request.form.get("localizacao")
+    status = request.form.get("status")
+    observacao = request.form.get("observacao_ambiente")
+    
+    # 5. Validação de segurança simples
+    if not nome_sala or nome_sala.strip() == "":
+        flash("Nome do Ambiente é obrigatório!", "danger")
+        return redirect(url_for("ambiente"))
+        
+    # 6. Atualiza o objeto com os dados novos
+    ambiente.nome_sala = nome_sala
+    ambiente.tipo = tipo
+    ambiente.localizacao = localizacao
+    ambiente.status_ambiente = int(status)
+    ambiente.observacao_ambiente = observacao
+    
+    # 7. Salva as alterações direto
+    sessao.commit()
+    flash("Ambiente alterado com sucesso!", "success")
+        
+    # Volta para a tela de ambientes
+    return redirect(url_for("ambiente"))
+
+#ambiente excluir
+@app.route("/ambiente/excluir", methods=["POST"])
+def excluir_ambiente():
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_ambiente = request.form.get("id_ambiente")
+    
+    # 2. Busca o ambiente no banco
+    ambiente = sessao.query(Ambiente).get(id_ambiente)
+
+    # 3. Realiza a exclusao do ambiente
+    if ambiente:
+        sessao.delete(ambiente)
+        sessao.commit()
+        flash("Excluído com sucesso!", "success") # Corrigido para 'success'
+    else:
+        flash("Ambiente não encontrado!", "danger")
+
+    # 4. Retorna a tela principal do ambiente
+    return redirect(url_for("ambiente"))
+
+#perfil
 @app.route("/perfil", methods=["GET", "POST"])
 def perfil():
+
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
+        # Pegando os dados EXATOS com os 'names' definidos no HTML
         nome_perfil = request.form.get("nome_perfil")
-        matricula = request.form.get("matricula_perfil")
-        cargo = request.form.get("cargo_perfil")
+        matricula = request.form.get("matricula")
+        cargo = request.form.get("cargo")
         
-        # Validação do nome
-        if nome_perfil == "":
+        # Validação de segurança simples
+        if not nome_perfil or nome_perfil.strip() == "":
             flash("Nome do Perfil é obrigatório!", "danger")
+            # Tem que passar a lista de perfis no erro também para não quebrar a página
             return render_template("perfil.html")
 
-        #inserir perfil
-        p = Perfil(nome_perfil=nome_perfil, matricula=matricula, cargo=cargo)
+        # Inserir perfil (já definindo status_perfil=1 para nascer Ativo)
+        p = Perfil(
+            nome_perfil=nome_perfil, 
+            matricula=matricula, 
+            cargo=cargo,
+            status_perfil=1
+        )
+        
         sessao.add(p)
         sessao.commit()
         flash("Perfil salvo com sucesso!", "success")
 
-        # Redireciona para a página inicial após o envio do formulário
+        # Redireciona para limpar o formulário e evitar duplo envio
         return redirect(url_for("perfil"))
    
+    # Envia a variável 'perfis' para o HTML desenhar os cards
     return render_template('perfil.html')
 
-#consultar perfil #feito e #verificado
-@app.route("/perfil/consultar", methods=["GET", "POST"])
+#consultar perfil
+@app.route("/perfil/consultar", methods=["GET"])
 def consultar_perfil():
+    # 1. Pega o texto que foi digitado na barra de pesquisa (nome exato do HTML)
+    nome_busca = request.args.get("nome_perfil", "")
     
-    #pegar o perfil que foi informado no formulário
-    perfil_nome = request.args.get("perfil","")
+    # 2. Consulta o(s) perfil(is) no banco filtrando pelo nome
+    perfis = sessao.query(Perfil).filter(Perfil.nome_perfil.like(f"%{nome_busca}%")).all()
     
-    #consultar o(s) perfil(s)
-    perfis = sessao.query(Perfil).filter(Perfil.nome_perfil.like(f"%{perfil_nome}%")).all()
-    
-    #chamar perfil.html para mostrar os dados
+    # 3. Chama a página perfil.html enviando os resultados da busca
     return render_template("perfil.html", perfis=perfis)
 
-
-#alterar perfil falta ver
-@app.route("/perfil/alterar/<int:id_perfil>", methods=["GET", "POST"])
-def alterar_perfil(id_perfil):
+#alterar perfil
+@app.route("/perfil/alterar", methods=["POST"])
+def alterar_perfil():
+    # 1. Pega o ID que veio escondido no formulário da modal
+    id_perfil = request.form.get("id_perfil")
     
-    #buscar os dados o id_perfil
+    # 2. Busca os dados do perfil no banco
     perfil = sessao.query(Perfil).get(id_perfil)
     
-    #valida se existe o perfil com a id_perfil informada
+    # 3. Valida se existe o perfil
     if perfil is None:
-        flash("Perfil não encontrado","danger")
+        flash("Perfil não encontrado", "danger")
         return redirect(url_for("perfil"))
     
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        perfil.nome_perfil = request.form.get("nome")
-        perfil.matricula = request.form.get("matricula")
-        perfil.cargo = request.form.get("cargo")
-        
-        #validade perfil
-        if perfil.nome_perfil == "":
-            flash("Nome do Perfil é obrigatório!","danger")
-            return render_template("alterar.perfil.html", perfil=perfil)
-        
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("perfil"))
+    # 4. Pega os dados exatos do HTML/Banco
+    nome_perfil = request.form.get("nome_perfil")
+    matricula = request.form.get("matricula")
+    cargo = request.form.get("cargo")
+    status_perfil = request.form.get("status_perfil")
     
-    return render_template("alterar.perfil.html", perfil=perfil)
+    # 5. Validação de segurança
+    if not nome_perfil or nome_perfil.strip() == "":
+        flash("Nome do Perfil é obrigatório!", "danger")
+        return redirect(url_for("perfil"))
+        
+    # 6. Atualiza o objeto com os dados novos
+    perfil.nome_perfil = nome_perfil
+    perfil.matricula = matricula
+    perfil.cargo = cargo
+    perfil.status_perfil = int(status_perfil) 
+    
+    # 7. Salva as alterações
+    sessao.commit()
+    flash("Perfil alterado com sucesso!", "success") 
+    
+    # Retorna para a tela principal
+    return redirect(url_for("perfil"))
 
-#perfil excluir falta ver
-@app.route("/perfil/excluir/<int:id_perfil>", methods=["POST"])
-def excluir_perfil(id_perfil):
-    #buscar os dados o id_perfil
+#perfil excluir
+@app.route("/perfil/excluir", methods=["POST"])
+def excluir_perfil():
+    # 1. Pega o ID que veio escondido no formulário da modal de exclusão
+    id_perfil = request.form.get("id_perfil")
+    
+    # 2. Busca os dados do perfil pelo ID
     perfil = sessao.query(Perfil).get(id_perfil)
 
-    #realizar a exclusao do perfil
+    # 3. Realiza a exclusão do perfil
     if perfil:
         sessao.delete(perfil)
         sessao.commit()
-        flash("Excluído com sucesso!","sucess")
+        flash("Excluído com sucesso!", "success") # Corrigido para 'success' (com 2 C's e 2 S's)
     else:
-        flash("Perfil não encontrado!","danger")
+        flash("Perfil não encontrado!", "danger")
 
-    #retornar a tela principal do perfil
+    # 4. Retorna a tela principal do perfil
     return redirect(url_for("perfil"))
 
-#movimentacao #feito
 @app.route("/movimentacao", methods=["GET", "POST"])
 def movimentacao():
-    
-    #pegar dados para for
-    perfils=sessao.query(Perfil).all()
-    chaves=sessao.query(Chave).all()
-    ambientes=sessao.query(Ambiente).all()
-    
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_movimentacao = request.form.get("data_fim_movimentacao")
-        hora_inicio_movimentacao = request.form.get("hora_inicio_movimentacao")
-        hora_fim_movimentacao = request.form.get("hora_fim_movimentacao")
-        data_movimentacao = request.form.get("data_movimentacao")
-        id_perfil= request.form.get("perfil")
-        id_ambiente=request.form.get("ambiente")
-        id_chave=request.form.get("chave")
-        
-        # Validação da data de retirada
-        if data_movimentacao == "":
-            flash("Data de retirada é obrigatória!", "danger")
-            return render_template("movimentacao.html")
-
-        #inserir movimentacao
-        m = Movimentacao(hora_inicio_movimentacao=hora_inicio_movimentacao, hora_fim_movimentacao=hora_fim_movimentacao, data_movimentacao=data_movimentacao, id_perfil=id_perfil, id_ambiente=id_ambiente, id_chave=id_chave)
-        sessao.add(m)
-        sessao.commit()
-        flash("Movimentação salva com sucesso!", "success")
-
-        # Redireciona para a página inicial após o envio do formulário
+        mov = sessao.query(Movimentacao).filter_by(codigo_reserva=request.form.get("codigo_reserva")).first()
+        if mov:
+            mov.date_hora_retirada, mov.status = datetime.now(), "Retirado"
+            sessao.commit()
+            flash(f"Retirada registrada! Cód: {mov.codigo_reserva}", "success")
+        else:
+            flash("Reserva não encontrada!", "danger")
         return redirect(url_for("movimentacao"))
     
-    return render_template('movimentacao.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
+    reservas_pendentes = sessao.query(Movimentacao, Perfil, Chave).join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil).join(Chave, Movimentacao.id_chave == Chave.id_chave).filter(Movimentacao.status == "Reservado").all()
+    movimentacoes_retiradas = sessao.query(Movimentacao, Perfil, Chave).join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil).join(Chave, Movimentacao.id_chave == Chave.id_chave).filter(Movimentacao.status == "Retirado").all()
+    
+    return render_template('movimentacao.html', reservas_pendentes=reservas_pendentes, movimentacoes_retiradas=movimentacoes_retiradas)
 
-#consultar movimentacao
-@app.route("/movimentacao/consultar", methods=["GET", "POST"])
-def consultar_movimentacao():
-    
-    #pegar a movimentacao que foi informada no formulário
-    data_retirada = request.args.get("data_retirada","")
-    
-    #consultar o(s) movimentacao(s)
-    movimentacoes = sessao.query(Movimentacao).filter(Movimentacao.data_retirada.like(f"%{data_retirada}%")).all()
-    
-    #chamar movimentacao.html para mostrar os dados
-    return render_template("movimentacao.html", movimentacoes=movimentacoes)
-
-
-#alterar movimentacao
-@app.route("/movimentacao/alterar/<int:id_movimentacao>", methods=["GET", "POST"])
-def alterar_movimentacao(id_movimentacao):
-    
-    #buscar os dados o id_movimentacao
-    movimentacao = sessao.query(Movimentacao).get(id_movimentacao)
-    
-    #valida se existe a movimentacao com a id_movimentacao informada
-    if movimentacao is None:
-        flash("Movimentação não encontrada","danger")
-        return redirect(url_for("movimentacao"))
-    
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        movimentacao.data_retirada = request.form.get("data_retirada")
-        movimentacao.horario_inicio = request.form.get("horario_inicio")
-        
-        #validade movimentacao
-        if movimentacao.data_retirada == "":
-            flash("Data de retirada é obrigatória!","danger")
-            return render_template("alterar.movimentacao.html", movimentacao=movimentacao)
-        
-        #salvar as alterações
+#estonar_movimentacao
+@app.route("/movimentacao/estornar", methods=["POST"])
+def estornar_retirada():
+    mov = sessao.query(Movimentacao).get(request.form.get("id_movimentacao"))
+    if mov:
+        mov.status, mov.date_hora_retirada = "Reservado", None
         sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("movimentacao"))
-    
-    return render_template("alterar.movimentacao.html", movimentacao=movimentacao)
-
-#movimentacao excluir
-@app.route("/movimentacao/excluir/<int:id_movimentacao>", methods=["POST"])
-def excluir_movimentacao(id_movimentacao):
-    #buscar os dados o id_movimentacao
-    movimentacao = sessao.query(Movimentacao).get(id_movimentacao)
-
-    #realizar a exclusao da movimentacao
-    if movimentacao:
-        sessao.delete(movimentacao)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
+        flash("Retirada estornada com sucesso!", "warning")
     else:
-        flash("Movimentação não encontrada!","danger")
-
-    #retornar a tela principal da movimentacao
+        flash("Movimentação não encontrada!", "danger")
     return redirect(url_for("movimentacao"))
 
 #devolucao #feita
 @app.route("/devolucao", methods=["GET", "POST"])
 def devolucao():
-    
-    #pegar dados para for
-    perfils = sessao.query(Perfil).all()
-    reservas = sessao.query(Reserva).all()
-    
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_devolucao = request.form.get("data_devolucao")
-        hora_inicio_devolucao = request.form.get("hora_inicio_devolucao")
-        hora_fim_devolucao = request.form.get("hora_fim_devolucao")
-        id_perfil = request.form.get("perfil")
-        id_reserva = request.form.get("reserva")
-        observacao_devoluca = request.form.get("observacao_devolucao")
-        
-        # Validação da data de reserva
-        if data_devolucao == "":
-            flash("Data de reserva é obrigatória!", "danger")
-            return render_template("devolucao.html")
-
-        #inserir devolucao
-        d = Devolucao(data_devolucao=data_devolucao, hora_fim_devolucao=hora_fim_devolucao, hora_inicio_devolucao=hora_inicio_devolucao, observacao_devoluca=observacao_devoluca, id_perfil=id_perfil, id_reserva=id_reserva)
-        sessao.add(d)
-        sessao.commit()
-        flash("Devolução salva com sucesso!", "success")
-
-        # Redireciona para a página inicial após o envio do formulário
+        mov = sessao.query(Movimentacao).filter_by(codigo_reserva=request.form.get("codigo_reserva")).first()
+        if mov:
+            mov.date_hora_devolucao, mov.status = datetime.now(), "Devolvido"
+            sessao.commit()
+            flash(f"Devolução registrada! Cód: {mov.codigo_reserva}", "success")
+        else:
+            flash("Movimentação não encontrada!", "danger")
         return redirect(url_for("devolucao"))
-    return render_template('devolucao.html', perfils=perfils, reservas=reservas)
+    chaves_retiradas = sessao.query(Movimentacao, Perfil, Chave).join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil).join(Chave, Movimentacao.id_chave == Chave.id_chave).filter(Movimentacao.status == "Retirado").all()
+    chaves_devolvidas = sessao.query(Movimentacao, Perfil, Chave).join(Perfil, Movimentacao.id_perfil == Perfil.id_perfil).join(Chave, Movimentacao.id_chave == Chave.id_chave).filter(Movimentacao.status == "Devolvido").all()
+    return render_template('devolucao.html', chaves_retiradas=chaves_retiradas, chaves_devolvidas=chaves_devolvidas)
 
-#consultar devolucao
-@app.route("/devolucao/consultar", methods=["GET", "POST"])
-def consultar_devolucao():
-    
-    #pegar a devolucao que foi informada no formulário
-    date_reserva = request.args.get("date_reserva","")
-    
-    #consultar a(s) devolucao(oes)
-    devolucoes = sessao.query(devolucao).filter(devolucao.date_reserva.like(f"%{date_reserva}%")).all()
-    
-    #chamar devolucao.html para mostrar os dados
-    return render_template("devolucao.html", devolucoes=devolucoes)
-
-
-#alterar devolucao
-@app.route("/devolucao/alterar/<int:id_devolucao>", methods=["GET", "POST"])
-def alterar_devolucao(id_devolucao):
-    
-    #buscar os dados o id_devolucao
-    devolucao = sessao.query(devolucao).get(id_devolucao)
-    
-    #valida se existe a devolucao com a id_devolucao informada
-    if devolucao is None:
-        flash("Devolução não encontrada","danger")
-        return redirect(url_for("devolucao"))
-    
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        devolucao.date_reserva = request.form.get("date_reserva")
-        devolucao.horario_devolucao = request.form.get("horario_devolucao")
-        devolucao.obsevacao_devolucao = request.form.get("obsevacao_devolucao")
-
-        #validade devolucao
-        if devolucao.date_reserva == "":
-            flash("Data de reserva é obrigatória!","danger")
-            return render_template("alterar.devolucao.html", devolucao=devolucao)
-
-        #salvar as alterações
+#estonar_devolucao
+@app.route("/devolucao/estornar", methods=["POST"])
+def estornar_devolucao():
+    mov = sessao.query(Movimentacao).get(request.form.get("id_movimentacao"))
+    if mov:
+        mov.status, mov.date_hora_devolucao = "Retirado", None
         sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("devolucao"))
-    
-    return render_template("alterar.devolucao.html", devolucao=devolucao)
-
-#devolucao excluir
-@app.route("/devolucao/excluir/<int:id_devolucao>", methods=["POST"])
-def excluir_devolucao(id_devolucao):
-    #buscar os dados o id_devolucao
-    devolucao = sessao.query(devolucao).get(id_devolucao)
-
-    #realizar a exclusao da devolucao
-    if devolucao:
-        sessao.delete(devolucao)
-        sessao.commit()
-        flash("Excluído com sucesso!","sucess")
+        flash("Devolução estornada com sucesso!", "warning")
     else:
-        flash("Devolução não encontrada!","danger")
-
-    #retornar a tela principal da devolucao
+        flash("Movimentação não encontrada!", "danger")
     return redirect(url_for("devolucao"))
 
-
 #reserva
-@app.route("/reserva",  methods=["GET", "POST"])
+@app.route("/reserva", methods=["GET", "POST"])
 def reserva():
-    
-    #pegar dados para for
-    perfils=sessao.query(Perfil).all()
-    chaves=sessao.query(Chave).all()
-    ambientes=sessao.query(Ambiente).all()
-    
+    todos_perfis = sessao.query(Perfil).all()
+    todas_chaves = sessao.query(Chave).all()
     
     if request.method == "POST":
-        # Aqui você pode processar os dados do formulário, por exemplo, salvando em um banco de dados
-        data_reserva = request.form.get("data_reserva")
-        hora_inicio_reserva= request.form.get("horario_reserva")
-        hora_fim_reserva = request.form.get("horario_reserva_fim")
-        id_perfil= request.form.get("perfil")
-        id_ambiente=request.form.get("ambiente")
-        id_chave=request.form.get("chave")
+        id_perfil = request.form.get("id_perfil")
+        id_chave = request.form.get("id_chave")
+        date_hora_reserva = request.form.get("date_hora_reserva")
+        date_hora_devolucao_prev = request.form.get("date_hora_devolucao_prev")
         
+        status = "Reservado"
         
-        # Validação da data de reserva
-        if data_reserva == "":
-            flash("Data de reserva é obrigatória!", "danger")
-            return render_template("devolucao.html")
+        # CHAMANDO O RANDINT DIRETO (Sem o 'random.')
+        codigo_reserva = str(randint(100000, 999999))
 
-        #inserir reserva
-        r = Reserva(data_reserva=data_reserva, hora_inicio_reserva=hora_inicio_reserva, hora_fim_reserva=hora_fim_reserva, id_ambiente=id_ambiente, id_chave=id_chave, id_perfil=id_perfil)
-        sessao.add(r)
+        nova_mov = Movimentacao(
+            id_perfil=id_perfil,
+            id_chave=id_chave,
+            codigo_reserva=codigo_reserva,
+            status=status,
+            date_hora_reserva=date_hora_reserva,
+            date_hora_devolucao_prev=date_hora_devolucao_prev
+        )
+        
+        sessao.add(nova_mov)
         sessao.commit()
-        flash("Reserva salva com sucesso!", "success")
-
-        # Redireciona para a página inicial após o envio do formulário
+        flash(f"Reserva realizada com sucesso! Código: {codigo_reserva}", "success")
         return redirect(url_for("reserva"))
-    
-    return render_template('reserva.html', perfils=perfils, chaves=chaves, ambientes=ambientes)
+        
+    return render_template('reserva.html', perfils=todos_perfis, chaves=todas_chaves, dados_reservas=[])
 
 #consultar reserva
-@app.route("/reserva/consultar", methods=["GET", "POST"])
+@app.route("/reserva/consultar", methods=["GET"])
 def consultar_reserva():
+    termo_busca = request.args.get("reserva", "")
     
-    #pegar a reserva que foi informada no formulário
-    reserva = request.args.get("reserva","")
-    
-    #consultar a(s) reserva(s)
-    reservas = sessao.query(Reserva).filter(Reserva.data_reserva.like(f"%{reserva}%")).all()
-    
-    reservas_dados= (
-        sessao.query(Perfil, Reserva)
-        .join(Perfil, Reserva.id)
+    query = sessao.query(Movimentacao, Perfil, Chave).join(
+        Perfil, Movimentacao.id_perfil == Perfil.id_perfil
+    ).join(
+        Chave, Movimentacao.id_chave == Chave.id_chave
     )
     
-    #chamar reserva.html para mostrar os dados
-    return render_template("reserva.html", reservas=reservas)
-
+    if termo_busca.strip():
+        query = query.filter(Movimentacao.codigo_reserva.like(f"%{termo_busca}%"))
+        
+    dados_reservas = query.all()
+    
+    todos_perfis = sessao.query(Perfil).all()
+    todas_chaves = sessao.query(Chave).all()
+    
+    return render_template("reserva.html", dados_reservas=dados_reservas, perfils=todos_perfis, chaves=todas_chaves)
 
 #alterar reserva
-@app.route("/reserva/alterar/<int:id_reserva>", methods=["GET", "POST"])
-def alterar_reserva(id_reserva):
+@app.route("/reserva/alterar", methods=["POST"])
+def alterar_reserva():
+    id_movimentacao = request.form.get("id_movimentacao")
+    mov = sessao.query(Movimentacao).get(id_movimentacao)
     
-    #buscar os dados o id_reserva
-    reserva = sessao.query(Reserva).get(id_reserva)
-    
-    #valida se existe a reserva com a id_reserva informada
-    if reserva is None:
-        flash("Reserva não encontrada","danger")
+    if mov is None:
+        flash("Reserva não encontrada.", "danger")
         return redirect(url_for("reserva"))
+        
+    mov.id_perfil = request.form.get("id_perfil")
+    mov.id_chave = request.form.get("id_chave")
+    mov.date_hora_reserva = request.form.get("date_hora_reserva")
+    mov.date_hora_devolucao_prev = request.form.get("date_hora_devolucao_prev")
     
-    #pegar os dados e atualizar o perfil
-    if request.method == "POST":
-        reserva.data_reserva = request.form.get("data_reserva")
-        reserva.horario_reserva = request.form.get("horario_reserva")
-        reserva.horario_reserva_fim = request.form.get("horario_reserva_fim")
-
-        #validade reserva
-        if reserva.data_reserva == "":
-            flash("Data de reserva é obrigatória!","danger")
-            return render_template("alterar.reserva.html", reserva=reserva)
-
-        #salvar as alterações
-        sessao.commit()
-        flash("Alterado com sucesso!","sucess")
-        return redirect(url_for("reserva"))
-    
-    return render_template("alterar.reserva.html", reserva=reserva)
+    sessao.commit()
+    flash("Reserva alterada com sucesso!", "success")
+    return redirect(url_for("reserva"))
 
 #reserva excluir
-@app.route("/reserva/excluir/<int:id_reserva>", methods=["POST"])
-def excluir_reserva(id_reserva):
-    #buscar os dados o id_reserva
-    reserva = sessao.query(Reserva).get(id_reserva)
+@app.route("/reserva/excluir", methods=["POST"])
+def excluir_reserva():
+    id_movimentacao = request.form.get("id_movimentacao")
+    mov = sessao.query(Movimentacao).get(id_movimentacao)
 
-    #realizar a exclusao da reserva
-    if reserva:
-        sessao.delete(reserva)
+    if mov:
+        sessao.delete(mov)
         sessao.commit()
-        flash("Excluído com sucesso!","sucess")
+        flash("Excluído com sucesso!", "success")
     else:
-        flash("Reserva não encontrada!","danger")
+        flash("Reserva não encontrada!", "danger")
 
-    #retornar a tela principal da reserva
     return redirect(url_for("reserva"))
 
 #historico
-@app.route("/historico")
+@app.route("/historico", methods=["GET"])
+@app.route("/historico", methods=["GET"])
 def historico():
-    return render_template('historico.html')
-
+    termo_busca = request.args.get("busca", "").strip()
+    historico_geral = []
+    
+    if termo_busca:
+        historico_geral = sessao.query(Movimentacao, Perfil, Chave).join(
+            Perfil, Movimentacao.id_perfil == Perfil.id_perfil
+        ).join(
+            Chave, Movimentacao.id_chave == Chave.id_chave
+        ).filter(
+            Movimentacao.codigo_reserva.like(f"%{termo_busca}%")
+        ).all()
+        
+    return render_template('historico.html', historico=historico_geral, termo_busca=termo_busca)
 
 app.run(debug=True)
