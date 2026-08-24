@@ -237,7 +237,7 @@ def excluir_usuario():
     # 4. Retorna a tela principal do usuário
     return redirect(url_for("usuario"))
 
-#ambiente 
+#ambiente
 @app.route("/ambiente", methods=["GET", "POST"])
 def ambiente():
     if request.method == "POST":
